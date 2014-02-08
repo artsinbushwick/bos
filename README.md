@@ -1,7 +1,7 @@
 Bushwick Open Studios website
 ===
 
-This is the source code repository for the WordPress site artsinbushwick.org. This document describes how to set up artsinbushwick.org to run on a local development environment at the hostname dev.artsinbushwick.org.
+This is the source code repository for the WordPress site artsinbushwick.org. This document describes how to set up a local development environment at the hostname dev.artsinbushwick.org.
 
 Requirements
 ---
