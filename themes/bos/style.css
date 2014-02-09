@@ -147,12 +147,14 @@ footer {
 
 footer .row1 img {
   float: left;
-  margin-top: -40px;
+  width: 180px;
+  height: 88px;
+  margin-top: -31px;
 }
 
 footer .border {
   background: #f0f0f0;
-  height: 40px;
+  height: 30px;
   margin: 0 0 0 175px;
   border-radius: 0 10px 0 0;
 }
@@ -328,7 +330,7 @@ footer .row3 {
   footer .about {
     clear: none;
     float: right;
-    width: 395px;
+    width: 445px;
   }
   
   footer .row2 {
