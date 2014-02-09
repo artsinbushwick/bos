@@ -32,7 +32,7 @@ global $bos;
             <br class="clear">
           </nav>
           <div class="tagline">
-            <?php bloginfo('description'); ?>
+            <?php echo str_replace('|', '<br>', get_bloginfo('description')); ?>
           </div>
           <br class="clear">
         </div>

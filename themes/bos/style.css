@@ -125,6 +125,7 @@ header .tagline {
   float: right;
   font-weight: bold;
   color: #EA288F;
+  text-align: right;
 }
 
 header h2 {
@@ -374,7 +375,7 @@ footer .row3 {
   }
   
   header nav.primary {
-    width: 800px;
+    width: 760px;
   }
   
   footer .about {

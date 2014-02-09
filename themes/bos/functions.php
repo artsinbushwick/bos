@@ -33,7 +33,7 @@ class BOS_Theme {
     if (!empty($description) && (is_home() || is_front_page())) {
       $title .= " | $description";
     }
-    return $title;
+    return strip_tags($title);
   }
   
   function header_count() {
