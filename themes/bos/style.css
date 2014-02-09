@@ -99,10 +99,6 @@ header nav.primary.active li {
   padding: 5px 10px;
 }
 
-header nav.primary li {
-  margin-right: 10px;
-}
-
 header nav.primary .toggle {
   display: inline-block;
   padding-top: 5px;
@@ -239,16 +235,17 @@ footer .row3 {
     width: 500px;
   }
   
-  header nav.primary ul {
-    display: block;
-  }
-  
   header nav.primary .toggle {
     display: none;
   }
   
+  header nav.primary ul {
+    display: block;
+  }
+  
   header nav.primary li {
     float: left;
+    margin-right: 15px;
   }
   
   header h1 {
