@@ -1,4 +1,9 @@
-      <footer>
+<?php
+
+global $bos;
+
+?>
+        <footer>
         <div class="row1">
           <a href="/">
             <img src="<?php echo get_template_directory_uri(); ?>/images/footer_aib.png" alt="Arts In Bushwick">
@@ -42,7 +47,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script>
     var theme_url = '<?php echo get_template_directory_uri(); ?>';
-    var header_count = <?php echo bos_header_count(); ?>;
+    var header_count = <?php echo $bos->header_count(); ?>;
     </script>
     <script src="<?php echo get_template_directory_uri(); ?>/bos.js"></script>
     <?php wp_footer(); ?>

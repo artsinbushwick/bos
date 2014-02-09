@@ -12,7 +12,7 @@ Version: 0.1
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{border:0;font-size:100%;font:inherit;vertical-align:baseline;margin:0;padding:0}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:none}table{border-collapse:collapse;border-spacing:0}
 
 body {
-  font: 16px/24px "helvetica neue", helvetica, arial, sans-serif;
+  font: 14px/20px "helvetica neue", helvetica, arial, sans-serif;
   text-align: center;
   background: #fff repeat-x center top;
   background-size: 960px 125px;
@@ -41,10 +41,15 @@ a:hover {
 
 header {
   position: relative;
+  margin-bottom: 30px;
 }
 
 header .top {
   height: 125px;
+}
+
+header .bottom br.clear {
+  display: none;
 }
 
 header h1 {
@@ -131,7 +136,7 @@ header h2 {
 }
 
 footer {
-  margin-top: 80px;
+  margin-top: 50px;
 }
 
 footer .row1 img {
@@ -155,7 +160,7 @@ footer .about {
 
 footer .row2 {
   font-size: 12px;
-  background: #F5F5F5;
+  background: #f0f0f0;
   border-radius: 0 0 0 10px;
   padding: 10px 15px;
 }
@@ -179,10 +184,29 @@ footer .row3 {
   font-size: 12px;
 }
 
+#sidebar {
+  display: none;
+}
+
+.post {
+  padding-top: 15px;
+  border-top: 1px solid #ccc;
+}
+
+.post h3 {
+  font-size: 1.5em;
+}
+
+.post p {
+  margin-top: 1em;
+}
+
 @media (min-width: 630px) {
   
   body {
     background-size: 1920px 250px;
+    font-size: 16px;
+    line-height: 24px;
   }
   
   .container {
@@ -262,6 +286,14 @@ footer .row3 {
     background: transparent url(images/head_aib_bg.png) repeat-x;
   }
   
+  header .bottom br.clear {
+    display: inline;
+  }
+  
+  footer {
+    margin-top: 80px;
+  }
+  
   footer .about {
     clear: none;
     float: right;
@@ -278,6 +310,36 @@ footer .row3 {
     width: 190px;
   }
   
+  #main {
+    width: 630px;
+  }
+  
+  #sidebar {
+    display: block;
+    margin-left: -30px;
+    font-size: 14px;
+    margin-top: 30px;
+  }
+  
+  #sidebar h3 {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+  
+  #sidebar .widget {
+    float: left;
+    width: 270px;
+    margin-left: 30px;
+    padding: 15px;
+    background: #f0f0f0;
+    border-top: 2px solid #8AC631;
+  }
+  
+  .post {
+    border-top: 2px solid #ccc;
+  }
+    
 }
 
 @media (min-width: 960px) {
@@ -330,6 +392,21 @@ footer .row3 {
   
   footer .row2 ul {
     width: 300px;
+  }
+  
+  #main {
+    float: left;
+  }
+  
+  #sidebar {
+    float: right;
+    width: 300px;
+    margin-left: 0;
+    margin-top: 0;
+  }
+  
+  #sidebar .widget {
+    margin-bottom: 15px;
   }
   
 }

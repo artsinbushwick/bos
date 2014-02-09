@@ -1,8 +1,13 @@
+<?php
+
+global $bos;
+
+?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
   <head>
     <meta charset="<?php bloginfo('charset'); ?>">
-    <title><?php echo bos_title(); ?></title>
+    <title><?php echo $bos->page_title(); ?></title>
     <link href="<?php bloginfo('stylesheet_url'); ?>" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?php wp_head(); ?>

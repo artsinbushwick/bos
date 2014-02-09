@@ -1,29 +1,62 @@
 <?php
 
-function bos_nav_menus() {
-  register_nav_menus(array(
-    'main-menu' => 'Below logo',
-    'secondary-menu' => 'Above logo',
-    'footer-menu' => 'Bottom of page'
-  ));
-}
-add_action('init', 'bos_nav_menus');
-
-function bos_title() {
-  $title = wp_title('|', false, 'right');
-  $title .= get_bloginfo('name');
-  $description = get_bloginfo('description', 'display');
-  if (!empty($description) && (is_home() || is_front_page())) {
-    $title .= " | $description";
+class BOS_Theme {
+  
+  function __construct() {
+    $this->add_action('init');
+    $this->add_action('widgets_init');
   }
-  return $title;
+  
+  function init() {
+    register_nav_menus(array(
+      'main-menu' => 'Below logo',
+      'secondary-menu' => 'Above logo',
+      'footer-menu' => 'Bottom of page'
+    ));
+  }
+  
+  function widgets_init() {
+    register_sidebar( array(
+      'name' => 'Sidebar',
+      'id' => 'sidebar',
+      'before_widget' => '<div class="widget">',
+      'after_widget' => '</div>',
+      'before_title' => '<h3>',
+      'after_title' => '</h3>',
+    ));
+  }
+  
+  function page_title() {
+    $title = wp_title('|', false, 'right');
+    $title .= get_bloginfo('name');
+    $description = get_bloginfo('description', 'display');
+    if (!empty($description) && (is_home() || is_front_page())) {
+      $title .= " | $description";
+    }
+    return $title;
+  }
+  
+  function header_count() {
+    $dir = get_template_directory() . '/headers';
+    $headers = glob("$dir/header*.jpg");
+    return count($headers);
+  }
+  
+  function add_action($hook, $method = null, $priority = 10, $args = 1) {
+    if (empty($method)) {
+      $method = $hook;
+    }
+    add_action($hook, array($this, $method), $priority, $args);
+  }
+  
+  function add_filter($hook, $method = null, $priority = 10, $args = 1) {
+    if (empty($method)) {
+      $method = $hook;
+    }
+    add_filter($hook, array($this, $method), $priority, $args);
+  }
 }
-
-function bos_header_count() {
-  $dir = get_template_directory() . '/headers';
-  $headers = glob("$dir/header*.jpg");
-  return count($headers);
-}
+$bos = new BOS_Theme();
 
 class BOS_Walker_Nav_Menu extends Walker_Nav_Menu {
   
