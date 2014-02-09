@@ -50,10 +50,6 @@ label.inline {
   display: inline;
 }
 
-form {
-  padding: 0 0 30px 0;
-}
-
 .help {
   color: #808080;
   margin-left: 10px;

@@ -66,6 +66,108 @@ class AIB_Registration extends Theme {
     }
   }
   
+  function post_save() {
+    global $wpdb, $blog_id;
+    
+    unset($_POST['blog_id']);
+    extract($_POST);
+    
+    if (strlen($post_excerpt) > 140) {
+      $post_excerpt = substr($post_excerpt, 0, 140);
+    }
+    
+    $post = array(
+      'ID' => $post_id,
+      'post_content' => $long_description,
+      'post_excerpt' => $post_excerpt
+    );
+    
+    if (!empty($primary_name)) {
+      if ($primary_name == 'artists') {
+        $post['post_title'] = $artists;
+      } else if ($primary_name == 'organization') {
+        $post['post_title'] = $organization;
+      } else if ($primary_name == 'event_name') {
+        $post['post_title'] = $event_name;
+      }
+    }
+    wp_update_post($post);
+    
+    if (!empty($website) && substr($website, 0, 4) != 'http') {
+      $website = "http://$website";
+    }
+    
+    $wpdb->update('aib_listing', array(
+      'artists' => stripslashes($artists),
+      'organization' => stripslashes($organization),
+      'event_name' => stripslashes($event_name),
+      'primary_name' => $primary_name,
+      'website' => $website,
+      'artist_count' => $artist_count,
+      'space_name' => stripslashes($space_name),
+      'street_address' => stripslashes($street_address),
+      'room_number' => $room_number,
+      'zip_code' => $zip_code,
+      'select_friday' => (empty($select_friday) ? '0' : '1'),
+      'select_saturday' => (empty($select_saturday) ? '0' : '1'),
+      'select_sunday' => (empty($select_sunday) ? '0' : '1'),
+      'time_friday' => $time_friday,
+      'time_saturday' => $time_saturday,
+      'time_sunday' => $time_sunday,
+      'additional_time_friday' => $additional_time_friday,
+      'additional_time_saturday' => $additional_time_saturday,
+      'additional_time_sunday' => $additional_time_sunday,
+      'admission_free' => (empty($admission_free) ? '0' : '1'),
+      'admission_price' => $admission_price,
+      'long_description' => $long_description,
+      'short_description' => $post_excerpt,
+      'media_other' => stripslashes($media_other),
+      'payment_method' => $payment_method,
+      'volunteer_message' => stripslashes($volunteer_message),
+      'legal_agreement' => (empty($legal_agreement) ? '0' : '1'),
+      'community_agreement' => (empty($community_agreement) ? '0' : '1'),
+      'referral' => stripslashes($referral),
+      'profile_story' => (empty($profile_story) ? '0' : '1'),
+      'benefit_interest' => (empty($benefit_interest) ? '0' : '1'),
+      'long_description' => stripslashes($long_description)
+    ), array('post_id' => $post_id, 'site_id' => $blog_id));
+    
+    if (!empty($tax_input['media'])) {
+      $terms = array_map('intval', $tax_input['media']);
+    } else {
+      $terms = array();
+    }
+    wp_set_object_terms($post_id, $terms, 'media');
+    
+    if (!empty($tax_input['attributes'])) {
+      $terms = array_map('intval', $tax_input['attributes']);
+    } else {
+      $terms = array();
+    }
+    wp_set_object_terms($post_id, $terms, 'attributes');
+    
+    $post = get_post($post_id);
+    $listing = $wpdb->get_row("
+      SELECT *
+      FROM aib_listing
+      WHERE post_id = $post_id
+        AND site_id = $blog_id
+    ");
+    
+    foreach (get_object_vars($listing) as $key => $value) {
+      $post->$key = $value;
+    }
+    $wpdb->update('wp_posts', array(
+      'post_content' => 
+        $this->get_content($post) . "\n" .
+        $this->get_subtitle($post) . "\n" .
+        $this->get_show_location($post) . "\n" .
+        $this->get_show_media($post) . "\n" .
+        $this->get_show_features($post) . "\n" .
+        $this->get_show_links($post) . "\n"
+    ), array('ID' => $post->ID));
+  }
+  
   function create_listing($email) {
     $token = trim(strtoupper($_POST['token']));
     if (!$this->confirm_token($token)) {
@@ -101,6 +203,131 @@ class AIB_Registration extends Theme {
     } else {
       return $response;
     }
+  }
+  
+  function get_content($post) {
+    $content = apply_filters('the_content', $post->post_content);
+    if (empty($content) && !empty($post->post_excerpt)) {
+      $content = $post->post_excerpt;
+    }
+    return $content;
+  }
+  
+  function get_subtitle($post) {
+    $key = $post->primary_name;
+    $subtitle = array();
+    if ($key != 'artists' && !empty($post->artists)) {
+      $subtitle[] = esc_html($post->artists);
+    }
+    if ($key != 'organization' && !empty($post->organization)) {
+      $subtitle[] = esc_html($post->organization);
+    }
+    if ($key != 'event_name' && !empty($post->event_name)) {
+      $subtitle[] = esc_html($post->event_name);
+    }
+    return implode(', ', $subtitle);
+  }
+  
+  function get_show_location($post) {
+    if (empty($this->locations)) {
+      $this->load_locations();
+    }
+    if (empty($post->location_id)) {
+      return '<i>No location assigned</i>';
+    } else {
+      $location = $this->locations[$post->location_id];
+      $title = $this->get_location_title($post);
+      if (!empty($title)) {
+        $title = "$title<br>\n";
+      }
+      $room = '';
+      if (!empty($post->room_number)) {
+        $room = " $post->room_number";
+      }
+      return "$title$location->address$room<br />Brooklyn, NY $location->zip";
+    }
+  }
+  
+  function load_locations() {
+    global $wpdb;
+    if (!empty($this->locations)) {
+      return;
+    }
+    $objects = $wpdb->get_results("
+      SELECT *
+      FROM aib_location
+    ");
+    $this->locations = array();
+    foreach ($objects as $object) {
+      $this->locations[$object->id] = $object;
+    }
+  }
+  
+  function get_location_title($post) {
+    if (empty($this->locations)) {
+      $this->load_locations();
+    }
+    $location = $this->locations[$post->location_id];
+    if (!empty($post->space_name)) {
+      return $post->space_name;
+    } else if (!empty($location->title)) {
+      return $location->title;
+    } else {
+      return '';
+    }
+  }
+  
+  function get_show_media($post) {
+    $terms = wp_get_object_terms($post->ID, 'media');
+    $media = array();
+    foreach ($terms as $term) {
+      $name = $term->name;
+      $name = preg_replace('/\d+\s(.+)/', '$1', $name);
+      if ($name == 'Other' && !empty($post->media_other)) {
+        $name = esc_html($post->media_other);
+      }
+      $media[] = $name;
+    }
+    return implode(", ", $media);
+  }
+  
+  function get_show_features($post) {
+    $terms = wp_get_object_terms($post->ID, 'attributes');
+    $attributes = array();
+    foreach ($terms as $term) {
+      $name = $term->name;
+      $name = preg_replace('/\d+\s(.+)/', '$1', $name);
+      $attributes[] = $name;
+    }
+    if (empty($terms)) {
+      return "<i class=\"empty\">No features selected</i>";
+    } else {
+      return implode("<br />\n", $attributes);
+    }
+  }
+  
+  function get_show_links($post) {
+    global $wpdb;
+    $result = '';
+    if (!empty($post->website)) {
+      $urls = explode(',', $post->website);
+      foreach ($urls as $url) {
+        $url = trim($url);
+        if (substr($url, 0, 4) != 'http') {
+          $url = "http://$url";
+        }
+        $show_url = preg_replace('#^http://#', '', $url);
+        $show_url = preg_replace('#(.+)/#', '$1', $show_url);
+        $result .= "&raquo; <a href=\"$url\" target=\"_new\">$show_url</a><br />\n";
+      }
+    }
+    $email = $wpdb->get_var("
+      SELECT user_email
+      FROM $wpdb->users
+      WHERE ID = $post->post_author
+    ");
+    $result .= "&raquo; <a href=\"mailto:$email\">Contact</a><br />";
+    return $result;
   }
   
   function setup_aib_post($user_id, $email) {
