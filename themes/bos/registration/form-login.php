@@ -1,21 +1,21 @@
 <?php
 
-global $response, $bos;
+global $aib_login_response, $bos;
 $reg = $bos->registration;
 
 ?>
 <form action="<?php echo $_SERVER['REQUEST_URI']; ?>" method="post" id="form-login">
 <input type="hidden" name="task" value="login" />
-  <?php if (!empty($response)) { ?>
+  <?php if (!empty($aib_login_response)) { ?>
     <div id="response">
-      <?php echo $response; ?>
+      <?php echo $aib_login_response; ?>
     </div>
   <?php } ?>
   <fieldset>
     <legend><?php bloginfo('name'); ?></legend>
     <div class="fields">
       <label>
-        <?php $reg->radio_input('action', 'create', array('checked' => (v('action') == 'create'))); ?>
+        <?php $reg->radio_input('action', 'create', array('checked' => (v('action') != 'edit'))); ?>
         Start a new listing
       </label>
       <label>

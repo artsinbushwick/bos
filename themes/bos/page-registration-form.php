@@ -1,6 +1,6 @@
 <?php
 
-wp_enqueue_style('aib_registration', get_template_directory_uri() . '/registration/registration.css');
+wp_enqueue_style('aib_registration', get_template_directory_uri() . '/registration/css/registration.css');
 wp_enqueue_script('aib_mootools', get_template_directory_uri() . '/registration/js/mootools.js');
 wp_enqueue_script('aib_mootools_more', get_template_directory_uri() . '/registration/js/mootools-more.js');
 //wp_enqueue_script('aib_slimbox', get_template_directory_uri() . '/registration/js/slimbox.js');
@@ -19,6 +19,8 @@ if ($bos->registration->in_progress()) {
 } else {
   get_template_part('registration/form', 'login');
 }
+
+$bos->registration->tokens_status();
 
 echo '</div>';
 

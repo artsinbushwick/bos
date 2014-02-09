@@ -1,5 +1,5 @@
 <div id="sidebar">
-  <div class="widget">
+  <div class="sponsors">
     <?php
     
     $sponsorship = get_page_by_path('sponsorship');
