@@ -11,6 +11,7 @@
 			  <div class="content">
 			    <?php the_content(); ?>
 			  </div>
+			  <?php edit_post_link('Edit post'); ?>
 			</div>
 			<?php
 		}

@@ -41,7 +41,7 @@ a:hover {
 
 header {
   position: relative;
-  margin-bottom: 30px;
+  margin-bottom: 15px;
 }
 
 header .top {
@@ -124,8 +124,9 @@ header nav.secondary {
 header .tagline {
   float: right;
   font-weight: bold;
-  color: #EA288F;
+  color: #666;
   text-align: right;
+  margin-top: -5px;
 }
 
 header h2 {
@@ -198,6 +199,15 @@ footer .row3 {
   margin-top: 1em;
 }
 
+.post-edit-link {
+  display: inline-block;
+  margin-top: 5px;
+  font-size: 80%;
+  text-transform: uppercase;
+  font-weight: normal;
+  color: #666;
+}
+
 @media (min-width: 630px) {
   
   body {
@@ -233,7 +243,7 @@ footer .row3 {
   }
   
   header nav.primary {
-    width: 500px;
+    width: 480px;
   }
   
   header nav.primary .toggle {
@@ -288,6 +298,10 @@ footer .row3 {
     display: inline;
   }
   
+  header .tagline {
+    margin-top: 0;
+  }
+  
   footer {
     margin-top: 80px;
   }
@@ -331,7 +345,7 @@ footer .row3 {
     margin-left: 30px;
     padding: 15px;
     background: #f0f0f0;
-    border-top: 2px solid #8AC631;
+    border-top: 2px solid #ff4b33;
   }
   
   .post {

@@ -9,7 +9,7 @@ class BOS_Theme {
   
   function init() {
     register_nav_menus(array(
-      'main-menu' => 'Below logo',
+      'primary-menu' => 'Below logo',
       'secondary-menu' => 'Above logo',
       'footer-menu' => 'Bottom of page'
     ));
