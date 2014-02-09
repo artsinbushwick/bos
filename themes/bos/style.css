@@ -61,6 +61,7 @@ header h1 a {
 }
 
 header nav.secondary {
+  display: none;
   float: right;
   font-size: 12px;
 }
@@ -72,17 +73,45 @@ header nav.secondary li {
 
 header nav.primary {
   float: left;
+  position: relative;
+}
+
+header nav.primary ul {
+  display: none;
+}
+
+header nav.primary.active ul {
+  display: block;
+  position: absolute;
+  width: 150px;
+  top: 35px;
+  left: -5px;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+header nav.primary.active li {
+  border-bottom: 1px solid #ccc;
+  padding: 5px 10px;
 }
 
 header nav.primary li {
   margin-right: 10px;
 }
 
-header nav.primary a {
+header nav.primary .toggle {
+  display: inline-block;
+  padding-top: 5px;
+  margin-top: -5px;
+  margin-left: -5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+header nav.primary li a {
   color: #000;
 }
 
-header nav.primary a:hover {
+header nav.primary li a:hover {
   color: #EA288F;
 }
 
@@ -99,6 +128,55 @@ header .tagline {
 
 header h2 {
   display: none;
+}
+
+footer {
+  margin-top: 80px;
+}
+
+footer .row1 img {
+  float: left;
+  margin-top: -40px;
+}
+
+footer .border {
+  background: #f0f0f0;
+  height: 40px;
+  margin: 0 0 0 175px;
+  border-radius: 0 10px 0 0;
+}
+
+footer .about {
+  clear: both;
+  font-size: 10px;
+  line-height: 1.2em;
+  padding: 5px 0;
+}
+
+footer .row2 {
+  font-size: 12px;
+  background: #F5F5F5;
+  border-radius: 0 0 0 10px;
+  padding: 10px 15px;
+}
+
+footer .row2 ul {
+  float: left;
+  width: 33%;
+}
+
+footer .row2 li {
+  display: block;
+}
+
+footer a {
+  font-weight: normal;
+}
+
+footer .row3 {
+  text-align: right;
+  padding: 5px 0;
+  font-size: 12px;
 }
 
 @media (min-width: 630px) {
@@ -127,6 +205,7 @@ header h2 {
   }
   
   header nav.secondary {
+    display: block;
     background: transparent;
     padding-right: 0;
     font-size: 16px;
@@ -134,6 +213,14 @@ header h2 {
   
   header nav.primary {
     width: 500px;
+  }
+  
+  header nav.primary ul {
+    display: block;
+  }
+  
+  header nav.primary .toggle {
+    display: none;
   }
   
   header nav.primary li {
@@ -175,6 +262,22 @@ header h2 {
     background: transparent url(images/head_aib_bg.png) repeat-x;
   }
   
+  footer .about {
+    clear: none;
+    float: right;
+    width: 395px;
+  }
+  
+  footer .row2 {
+    clear: both;
+    padding: 15px 30px;
+  }
+  
+  footer .row2 ul {
+    font-size: 14px;
+    width: 190px;
+  }
+  
 }
 
 @media (min-width: 960px) {
@@ -213,6 +316,20 @@ header h2 {
   
   header nav.primary {
     width: 800px;
+  }
+  
+  footer .about {
+    clear: none;
+    float: none;
+    width: auto;
+  }
+  
+  footer .row2 {
+    clear: none;
+  }
+  
+  footer .row2 ul {
+    width: 300px;
   }
   
 }

@@ -28,9 +28,17 @@ function resize_logo() {
   }
 }
 
+function setup_menu() {
+  $('nav.primary .toggle').click(function(e) {
+    e.preventDefault();
+    $('nav.primary').toggleClass('active');
+  });
+}
+
 $(document).ready(function() {
   set_header();
   resize_logo();
+  setup_menu();
   $(window).resize(resize_logo);
 });
     
