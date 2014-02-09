@@ -69,7 +69,7 @@ class AIB_Registration extends Theme {
   function create_listing($email) {
     $token = trim(strtoupper($_POST['token']));
     if (!$this->confirm_token($token)) {
-      return '<ul><li><strong>ERROR</strong>: Sorry, that registration code is invalid. You can read more about registration codes <a href="' . get_bloginfo('url') . '"/registration-codes/">here</a>. Please <a href="mailto:registration@artsinbushwick.org">contact us</a> if you cannot get your code to work.</li></ul>';
+      return '<ul><li><strong>ERROR</strong>: Sorry, that registration code is invalid. You can read more about registration codes <a href="' . get_bloginfo('url') . '/registration-codes/">here</a>. Please <a href="mailto:registration@artsinbushwick.org">contact us</a> if you cannot get your code to work.</li></ul>';
     } else if ($this->registration_exists($email)) {
       return '<ul><li>Oops, it appears that email address has already started the registration process for this year’s festival. Please try the "edit an existing listing" option.</li></ul>';
     }
@@ -329,7 +329,8 @@ The BOS registration robot
     $token = trim(strtoupper($token));
     $wpdb->update('aib_token', array(
       'user_id' => $user_id,
-      'site_id' => $blog_id
+      'site_id' => $blog_id,
+      'available' => 0
     ), array('token' => $token));
   }
   
