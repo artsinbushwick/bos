@@ -6,6 +6,12 @@ require_once ABSPATH . 'wp-admin/includes/template.php';
 
 $reg = $bos->registration;
 
+if (defined('AIB_EVENT') && preg_match('/(\d\d\d\d)/', AIB_EVENT, $matches)) {
+  $year = $matches[1];
+} else {
+  $year = date('Y');
+}
+
 if (!empty($_POST['task']) && $_POST['task'] == 'save' && empty($response)) {
   $response = '<ul><li>Your listing information has been saved.  You may continue to edit your information here.</li><li>If you still need to pay the registration fee, please make sure to scroll down to the Paypal link at the bottom of this form.</li><li>You should have also received an email from us with all of the information you will need to manage your listing, update your information, organize your show, and stay in touch with us.  If you have any questions, feel free to email us at <a href="mailto:registration@artsinbushwick.org">registration@artsinbushwick.org</a>.</li></ul>';
 }
@@ -36,17 +42,17 @@ if (!empty($_POST['task']) && $_POST['task'] == 'save' && empty($response)) {
         <li><a href="#legal">Terms and Conditions</a></li>
       </ol>
     </div>
-    <p>Welcome to the registration form for BOS 2013!  To register a show for BOS 2013, please complete the following steps:</p>
+    <p>Welcome to the registration form for BOS<?php echo $year; ?>!  To register a show for BOS<?php echo $year; ?>, please complete the following steps:</p>
     <ol>
       <li>
-        <p>Enter the information about your show.  A show can be any artistic or creative activity that you would like to have included in the BOS2013 Festival program &mdash; as long as you're doing something within the Festival area <link to map> during the weekend of June 1-3, and you want people to come see it, you can go ahead and register here!</p>
+        <p>Enter the information about your show.  A show can be any artistic or creative activity that you would like to have included in the BOS<?php echo $year; ?> Festival program &mdash; as long as you're doing something within the Festival area <link to map> during the weekend of June 1-3, and you want people to come see it, you can go ahead and register here!</p>
         <p>The information you enter will be used to promote your event in our print program and online, so please fill it out as completely and accurately as possible.</p>
         <p>If you don't have all of your information yet that's OK, you can come back and edit this up until the close of registration on April 28th (for the print program), or up until the weekend of BOS (for the web profiles).</p>
         <p>However, if you're not sure whether you're doing a show, or you don't have a space yet, we ask that you please wait to register until you have your plans in place.  If you need space to show during BOS, you can check out the <a href="<?php bloginfo('url'); ?>/seeking/">Artists Seeking Spaces / Spaces Seeking Artists</a> page and see what spaces or group shows are looking for additional artists.</p>
       </li>
       <li class="headroom">Upload images.  The images you submit will be displayed online as part of your artist profile.</li>
       <li>
-        <p>Contribute.  Since BOS 2013 is an all-volunteer event, all BOS 2013 registrants are required contribute to making the Festival happen.  You can contribute in one of two ways:</p>
+        <p>Contribute.  Since BOS<?php echo $year; ?> is an all-volunteer event, all BOS<?php echo $year; ?> registrants are required contribute to making the Festival happen.  You can contribute in one of two ways:</p>
         <ul>
           <li>Pay a registration fee of $35</li>
           <li>Volunteer at least five hours to help with festival operations, either before or during the BOS weekend.</li>
@@ -54,7 +60,7 @@ if (!empty($_POST['task']) && $_POST['task'] == 'save' && empty($response)) {
         <p>More information on how to contribute is at the bottom of this form.  PLEASE NOTE that you must finish this section for your registration to be complete.</p>
       </li>
     </ol>
-    <p>If you have any questions about registration, please feel free to email us at <a href="mailto:registration@artsinbushwick.org">registration@artsinbushwick.org</a>.  For general questions about participating in BOS 2013, please email <a href="mailto:openstudios@artsinbushwick.org">openstudios@artsinbushwick.org</a>.</p>
+    <p>If you have any questions about registration, please feel free to email us at <a href="mailto:registration@artsinbushwick.org">registration@artsinbushwick.org</a>.  For general questions about participating in BOS<?php echo $year; ?>, please email <a href="mailto:openstudios@artsinbushwick.org">openstudios@artsinbushwick.org</a>.</p>
   </fieldset>
   <h3 class="required">* required fields</h3>
   <fieldset id="basic-info">
@@ -97,7 +103,7 @@ whose work will be shown or who is part of making your show happen.</p>
   </fieldset>
   <fieldset id="where-when">
     <legend>Show Details: Where and When</legend>
-    <p>Please enter the location where you will be showing during BOS 2013.  DO NOT enter your home address, or any other location.  If your location is not within the <a href="http://maps.google.com/maps/ms?ie=UTF&msa=0&msid=100857039057171602899.000467660590f1726e3fb">BOS 2013 festival area</a>, your listing will not be included on our program or web listings.</p>
+    <p>Please enter the location where you will be showing during BOS<?php echo $year; ?>.  DO NOT enter your home address, or any other location.  If your location is not within the <a href="http://maps.google.com/maps/ms?ie=UTF&msa=0&msid=100857039057171602899.000467660590f1726e3fb">BOS<?php echo $year; ?> festival area</a>, your listing will not be included on our program or web listings.</p>
     <div class="form-field">
       <div class="controls float">
         <label>
@@ -167,7 +173,7 @@ whose work will be shown or who is part of making your show happen.</p>
         </label>
       </div>
       <div class="info float">
-        <p>BOS 2013 begins Friday evening May 31st and runs through Sunday evening June 2nd.  Standard Festival hours are 12-7 Saturday and Sunday, but you can be open at whatever time and for whatever hours you would like.</p>
+        <p>BOS<?php echo $year; ?> begins Friday evening May 31st and runs through Sunday evening June 2nd.  Standard Festival hours are 12-7 Saturday and Sunday, but you can be open at whatever time and for whatever hours you would like.</p>
         <p>"Open Hours" reflects the full hours your space will
 be open that day.</p>
         <p>"Additional Times" should reflect any special
@@ -258,7 +264,7 @@ for this day.</p>
       <?php $reg->text_input('referral'); ?>
     </label>
     <hr />
-    <p>Are you interested in being interviewed for a profile story on the BOS2013 Blog?  We will not be able to interview everyone, but we will select subjects at random from everyone who is interested.</p>
+    <p>Are you interested in being interviewed for a profile story on the BOS<?php echo $year; ?> Blog?  We will not be able to interview everyone, but we will select subjects at random from everyone who is interested.</p>
     <label class="profile">
       <?php $reg->checkbox_input('profile_story'); ?>
       <strong>Yes I am interested in being profiled</strong>
@@ -266,11 +272,11 @@ for this day.</p>
   </fieldset>
   <fieldset id="contribute">
     <legend>Contribute!</legend>
-    <p>Since BOS2013 is an all-volunteer event, all BOS2013 registrants are required contribute to making the Festival happen.  You can contribute in one of two ways:</p>
+    <p>Since BOS<?php echo $year; ?> is an all-volunteer event, all BOS<?php echo $year; ?> registrants are required contribute to making the Festival happen.  You can contribute in one of two ways:</p>
     <ul>
       <li>Pay a registration fee of $35 OR</li>
       <li>Volunteer at least five hours to help with festival operations, either before or during the BOS weekend.</li>
-      <!--<li>Donate a piece of artwork to be sold at the BOS 2013 Benefit Showcase and Sample Sale.</li>-->
+      <!--<li>Donate a piece of artwork to be sold at the BOS<?php echo $year; ?> Benefit Showcase and Sample Sale.</li>-->
     </ul>
     <p>PLEASE NOTE: If you offer to volunteer but if for any reason you do not fulfill your five-hour
 obligation, you will be billed for the registration fee.  If you do
@@ -310,15 +316,15 @@ want to contact us directly about volunteering, please email <a href="mailto:vol
       <?php $reg->checkbox_input('legal_agreement'); ?>
       <strong>I have read and accept the Terms and Conditions</strong>
     </label>
-    <a href="http://artsinbushwick.org/BOS2013/register/terms-and-conditions/" target="_blank">Read the BOS2013 Registration Terms and Conditions</a>
+    <a href="<?php bloginfo('url'); ?>/register/terms-and-conditions/" target="_blank">Read the BOS<?php echo $year; ?> Registration Terms and Conditions</a>
     <hr />
     <label>
       <?php $reg->checkbox_input('community_agreement'); ?>
       <strong>I understand that Arts In Bushwick is an all-volunteer community organization, and
-      that as a registrant I will share responsibility for making BOS2013 a
+      that as a registrant I will share responsibility for making BOS<?php echo $year; ?> a
       success.</strong>
     </label>
-    <a href="http://artsinbushwick.org/BOS2013/register/registrant-how-to/" target="_blank">Read the BOS2013 Registrant How-To</a>
+    <a href="<?php bloginfo('url'); ?>/register/registrant-how-to/" target="_blank">Read the BOS<?php echo $year; ?> Registrant How-To</a>
   </fieldset>
   <fieldset id="save">
       <legend>Save Listing!</legend>
