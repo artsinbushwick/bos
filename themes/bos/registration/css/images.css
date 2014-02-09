@@ -1,0 +1,47 @@
+body {
+  font: 14px helvetica, arial, sans-serif;
+  margin: 20px;
+}
+
+form, .image {
+  float: left;
+  margin-right: 15px;
+}
+
+.image {
+  font-size: 11px;
+}
+
+form input {
+  display: block;
+}
+
+#submit {
+  margin-top: 10px;
+}
+
+.clear {
+  clear: both;
+}
+
+a {
+  color: #EC008C;
+}
+
+a:hover {
+  color: #000;
+}
+
+.image img {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.info {
+  color: #444;
+  background: #f2f2f2;
+}
+
+.info p {
+  padding: 10px 15px 15px 15px;
+}

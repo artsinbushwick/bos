@@ -1,0 +1,434 @@
+#registration {
+  font-size: 14px;
+}
+
+input.text {
+  width: 300px;
+  display: block;
+  margin-top: 5px;
+  padding: 5px;
+  font-size: 13px;
+}
+
+textarea.text {
+  width: 600px;
+  display: block;
+}
+
+input.radio {
+  margin-right: 5px;
+}
+
+input.button {
+  font-size: 14px;
+  padding: 5px;
+}
+
+fieldset {
+  border: 1px solid #808080;
+  margin-bottom: 20px;
+  padding: 10px 20px 20px 20px;
+  -moz-border-radius: 4px;
+  -khtml-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+
+legend {
+  font-weight: bold;
+  font-size: 18px;
+  padding: 0 5px;
+  color: #EC008C;
+}
+
+label {
+  display: block;
+  margin: 0 0 10px 0;
+}
+
+label.inline {
+  display: inline;
+}
+
+form {
+  padding: 0 0 30px 0;
+}
+
+.help {
+  color: #808080;
+  margin-left: 10px;
+}
+
+.float {
+  float: left;
+}
+
+.nudge-right {
+  margin-left: 15px;
+}
+
+.primary-name {
+  padding-top: 29px;
+  padding-left: 20px;
+}
+
+.clear {
+  clear: both;
+}
+
+#submit_login {
+  display: none;
+}
+
+.controls {
+  width: 25%;
+}
+
+.info {
+  color: #444;
+  background: #f2f2f2;
+}
+
+#form-login .fields {
+  float: left;
+}
+
+#form-login .info {
+  float: right;
+  width: 550px;
+}
+
+#where-when .info {
+  width: 450px;
+  margin: 20px 0 5px 30px;
+}
+
+#where-when .controls {
+  width: 320px;
+}
+
+#media-types .info {
+  width: 240px;
+  margin: 25px 15px 0 0;
+}
+
+#media-types h3 {
+  margin-bottom: 5px;
+}
+
+#contribute .method {
+  width: 400px;
+  margin-right: 10px;
+}
+
+#paypal .info {
+  width: 240px;
+  margin: 10px 0 5px 30px;
+}
+
+
+.info p {
+  margin: 15px;
+}
+
+p.or {
+  color: #000;
+  margin: 0 0 5px 22px;
+}
+
+.taxonomy {
+  border: 1px solid #808080;
+  padding: 10px;
+  width: 275px;
+  height: 275px;
+  overflow: auto;
+}
+
+#registration .taxonomy ul,
+
+#registration .taxonomy ol {
+  margin: 0;
+}
+
+.taxonomy li {
+  list-style: none;
+  margin-left: 0 !important;
+}
+
+#media-1,
+#media-2,
+#media-3,
+#media-4,
+#media-5,
+#media-44 {
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.taxonomy .children {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #EC008C;
+  margin-bottom: 10px;
+}
+
+#media-other {
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #EC008C;
+}
+
+#media-1 li,
+#media-2 li,
+#media-3 li,
+#media-4 li,
+#media-5 li,
+#media-44 li {
+  font-weight: normal;
+}
+
+#media-1 input,
+#media-2 input,
+#media-3 input,
+#media-4 input,
+#media-5 input,
+#media-44 input {
+  display: none;
+}
+
+#media-1 .children input,
+#media-2 .children input,
+#media-3 .children input,
+#media-4 .children input,
+#media-5 .children input,
+#media-6 input,
+#media-44 .children input {
+  display: inline;
+  margin-right: 3px;
+}
+
+#media-other input {
+  width: 120px;
+  margin-left: 20px;
+}
+
+.taxonomy ul {
+  margin: 0;
+}
+
+.taxonomy .children {
+  margin: 0;
+}
+
+.taxonomy label {
+  margin: 0 0 5px 0;
+}
+
+#input_volunteer_message {
+  width: 400px;
+  height: 100px;
+  margin: 10px 0;
+  padding: 5px;
+  border: 1px solid #999;
+  -moz-border-radius: 4px;
+  -khtml-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+
+#volunteer_message {
+  margin-left: 25px;
+}
+
+#paypal {
+  position: absolute;
+  margin-top: 15px;
+  width: 300px;
+}
+
+#paypal fieldset {
+  background: #fff;
+}
+
+#paypal input {
+  margin-left: 15px;
+}
+
+#paypal_form {
+  padding-bottom: 0;
+}
+
+#status {
+  margin-top: 15px;
+}
+
+#images {
+  padding: 0;
+}
+
+#images legend {
+  margin-left: 20px;
+}
+
+#images iframe {
+  width: 100%;
+  height: 285px;
+  border: 0;
+}
+
+#response, #jump {
+  padding: 20px;
+  background: #eee;
+  border: 1px solid #EC008C;
+  margin-bottom: 20px;
+  -moz-border-radius: 4px;
+  -khtml-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+#response ul {
+  margin-top: 0 !important;
+}
+
+#response li {
+  margin-left: 15px;
+  list-style: square;
+  color: #ED425C;
+}
+
+#response a {
+  color: #000;
+  text-decoration: underline;
+}
+
+#user {
+  margin: 0 0 15px 0;
+}
+
+#registration ul, #registration ol, #registration p {
+  margin-top: 10px;
+}
+
+#registration li {
+  margin-left: 20px;
+}
+
+.headroom {
+  margin-top: 15px;
+}
+
+#jump {
+  float: right;
+  width: 300px;
+  margin: 15px 5px 15px 15px;
+}
+
+#jump li {
+  margin-top: 3px;
+}
+
+.form-field {
+  margin-top: 15px;
+}
+
+.day {
+  line-height: 24px;
+  margin-bottom: 0;
+}
+
+.day input.checkbox {
+  margin-right: 3px;
+}
+
+.time {
+  margin-left: 20px;
+  text-align: right;
+  width: 250px;
+}
+
+
+.time input.text {
+  display: inline;
+  width: 100px;
+}
+
+#registration hr {
+  display: block;
+  color: #fff;
+  background-color: #fff;
+  height: 1px;
+  border: 0;
+  border-bottom: 1px solid #EC008C;
+  margin: 20px auto;
+  
+}
+
+.when .info {
+  margin-top: 20px;
+}
+
+.admission input.text {
+  width: 100px;
+  margin-top: 5px;
+  margin-left: 20px;
+}
+
+#media-types .admission .info {
+  margin-top: 5px;
+}
+
+#description textarea {
+  margin-top: 5px;
+  padding: 5px;
+  border: 1px solid #999;
+  -moz-border-radius: 4px;
+  -khtml-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+
+label.profile {
+  margin-top: 10px;
+}
+
+#contribute p.or {
+  color: #EC008C;
+  margin: 0 10px 10px 0;
+}
+
+label.benefit {
+  margin-top: 10px;
+}
+
+.required {
+  color: #EC008C;
+}
+
+h3.required {
+  margin-bottom: 15px;
+}
+
+span.required, p.required {
+  font-weight: bold;
+}
+
+p.required {
+  margin-bottom: 15px;
+}
+
+#contribute p.required {
+  margin: 25px 0 0 0;
+}
+
+#legal p {
+  margin: 0 0 15px 0;
+}
+
+input.checkbox {
+  margin-right: 3px;
+}
+
+input {
+  color: #000;
+}

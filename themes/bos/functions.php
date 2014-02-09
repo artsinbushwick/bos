@@ -1,10 +1,14 @@
 <?php
 
-class BOS_Theme {
+require __DIR__ . '/lib/theme.php';
+require __DIR__ . '/registration/registration.php';
+
+class BOS_Theme extends Theme {
   
   function __construct() {
     $this->add_action('init');
     $this->add_action('widgets_init');
+    $this->registration = new AIB_Registration();
   }
   
   function init() {
@@ -42,22 +46,10 @@ class BOS_Theme {
     return count($headers);
   }
   
-  function add_action($hook, $method = null, $priority = 10, $args = 1) {
-    if (empty($method)) {
-      $method = $hook;
-    }
-    add_action($hook, array($this, $method), $priority, $args);
-  }
-  
-  function add_filter($hook, $method = null, $priority = 10, $args = 1) {
-    if (empty($method)) {
-      $method = $hook;
-    }
-    add_filter($hook, array($this, $method), $priority, $args);
-  }
 }
 $bos = new BOS_Theme();
 
+// This walker class is used for the footer links, to split them into 3 columns
 class BOS_Walker_Nav_Menu extends Walker_Nav_Menu {
   
   function start_el(&$output, $item, $depth, $args) {
