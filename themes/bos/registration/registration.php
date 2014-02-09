@@ -403,6 +403,10 @@ The BOS registration robot
     return false;
   }
   
+  function is_complete() {
+    return false;
+  }
+  
   function get_post($user_id = null) {
     global $wpdb;
     if (empty($user_id)) {
