@@ -10,7 +10,7 @@ if (!empty($_GET['images'])) {
   wp_enqueue_script('aib_registration', get_template_directory_uri() . '/registration/js/registration.js');
   get_header();
   echo '<div id="registration">';
-
+  
   if (have_posts()) {
     the_post();
   }

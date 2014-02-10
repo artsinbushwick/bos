@@ -32,7 +32,8 @@ global $bos;
             <br class="clear">
           </nav>
           <div class="tagline">
-            <?php echo str_replace('|', '<br>', get_bloginfo('description')); ?>
+            <?php bloginfo('description'); ?>
+            <div class="dates"><?php echo get_theme_mod('bos_friday_date'); ?>–<?php echo get_theme_mod('bos_sunday_date'); ?></div>
           </div>
           <br class="clear">
         </div>

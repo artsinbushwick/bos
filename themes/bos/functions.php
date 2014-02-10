@@ -8,6 +8,7 @@ class BOS_Theme extends Theme {
   function __construct() {
     $this->add_action('init');
     $this->add_action('widgets_init');
+    $this->add_action('customize_register');
     $this->registration = new AIB_Registration();
   }
   
@@ -28,6 +29,30 @@ class BOS_Theme extends Theme {
       'before_title' => '<h3>',
       'after_title' => '</h3>',
     ));
+  }
+  
+  function customize_register($wp_customize) {
+    $wp_customize->add_section('bos', array(
+      'title'      => __('Bushwick Open Studios', 'bos'),
+      'priority'   => 30
+    ));
+    $days = array(
+      'friday' => 'May 30',
+      'saturday' => 'May 31',
+      'sunday' => 'June 1'
+    );
+    foreach ($days as $day => $date) {
+      $id = "bos_{$day}_date";
+      $wp_customize->add_setting($id, array(
+        'default'     => $date,
+        'transport'   => 'refresh'
+      ));
+      $wp_customize->add_control(new WP_Customize_Control($wp_customize, $id, array(
+        'label'      => ucwords("$day Date"),
+        'section'    => 'bos',
+        'settings'   => $id
+      )));
+    }
   }
   
   function page_title() {
