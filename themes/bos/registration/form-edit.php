@@ -5,12 +5,7 @@ global $userdata, $page_slug, $bos;
 require_once ABSPATH . 'wp-admin/includes/template.php';
 
 $reg = $bos->registration;
-
-if (defined('AIB_EVENT') && preg_match('/(\d\d\d\d)/', AIB_EVENT, $matches)) {
-  $year = $matches[1];
-} else {
-  $year = date('Y');
-}
+$year = $reg->get_year();
 
 if (!empty($_POST['task']) && $_POST['task'] == 'save' && empty($response)) {
   $response = '<ul><li>Your listing information has been saved.  You may continue to edit your information here.</li><li>If you still need to pay the registration fee, please make sure to scroll down to the Paypal link at the bottom of this form.</li><li>You should have also received an email from us with all of the information you will need to manage your listing, update your information, organize your show, and stay in touch with us.  If you have any questions, feel free to email us at <a href="mailto:registration@artsinbushwick.org">registration@artsinbushwick.org</a>.</li></ul>';

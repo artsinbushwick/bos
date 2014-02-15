@@ -385,8 +385,10 @@ class AIB_Registration extends Theme {
       ));
       clean_user_cache($user_id);
       $url = get_bloginfo('url');
-      /*wp_mail($email, 'Bushwick Open Studios registration', "
-Thank you for registering again for BOS 2013! You can login here:
+      $year = $this->get_year();
+      
+      wp_mail($email, 'Bushwick Open Studios registration', "
+Thank you for registering again for BOS$year! You can login here:
 
 URL: $url/registration-form/
 Email: $email
@@ -396,11 +398,11 @@ If you forget your password, please visit the password recovery page:
 http://artsinbushwick.org/wp-login.php?action=lostpassword
 
 You can return at any time to edit your listing information using the
-following URL: http://artsinbushwick.org/bos2013/reg-form/
+following URL: $url/registration-form/
 
-Please review the BOS2013 Registrant How-To for information about
+Please review the BOS$year Registrant How-To for information about
 promotions, organizing your show, and other odds and ends:
-http://artsinbushwick.org/bos2013/register/registrant-how-to/
+$url/register/registrant-how-to/
 
 If you have questions or need help with anything you can email us at
 registration@artsinbushwick.org.
@@ -408,7 +410,7 @@ registration@artsinbushwick.org.
 Warm regards,
 The BOS registration robot
 
-");*/
+");
     }
     return $response;
   }
@@ -453,35 +455,35 @@ The BOS registration robot
       return $errors;
   
     //$user_pass = wp_generate_password();
-    $user_id = wp_create_user( $user_login, $user_pass, $user_email );
+    $user_id = wp_create_user($user_login, $user_pass, $user_email);
     if ( !$user_id ) {
       $errors->add('registerfail', sprintf(__('<strong>ERROR</strong>: Couldn&#8217;t register you... please contact the <a href="mailto:%s">webmaster</a> !'), get_option('admin_email')));
       return $errors;
     }
     
     $url = get_bloginfo('url');
-    /*wp_mail($user_email, 'Bushwick Open Studios registration', "
-Thank you for registering for BOS 2013!  In case you forget your login
+    wp_mail($user_email, 'Bushwick Open Studios registration', "
+Thank you for registering for BOS$year! In case you forget your login
 info in the future, here it is:
-  
+
 URL: $url/registration-form/
 Email: $user_email
 Password: $user_pass
 
 You can return at any time to edit your listing information using the
-following URL: http://artsinbushwick.org/bos2013/reg-form/
-  
-Please review the BOS2013 Registrant How-To for information about
+following URL: $url/registration-form/
+
+Please review the BOS$year Registrant How-To for information about
 promotions, organizing your show, and other odds and ends:
-http://artsinbushwick.org/bos2013/register/registrant-how-to/
-  
+$year/register/registrant-how-to/
+
 If you have questions or need help with anything you can email us at
 registration@artsinbushwick.org.
-  
+
 Warm regards,
 The BOS registration robot
-  
-");*/
+
+");
     
     return $user_id;
   }
@@ -528,6 +530,14 @@ The BOS registration robot
       return false;
     }
     return $userdata->ID;
+  }
+  
+  function get_year() {
+    if (defined('AIB_EVENT') && preg_match('/(\d\d\d\d)/', AIB_EVENT, $matches)) {
+      return $matches[1];
+    } else {
+      return date('Y');
+    }
   }
   
   function confirm_token($token) {
