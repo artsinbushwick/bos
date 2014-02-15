@@ -199,16 +199,31 @@ for this day.</p>
       <h3>Media Types <span class="required">*</span></h3>
       <div id="media" class="taxonomy">
         <ul>
-          <?php wp_terms_checklist($post->ID, array('taxonomy' => 'media')); ?>
+          <?php
+          
+          wp_terms_checklist($post->ID, array(
+            'taxonomy' => 'media',
+            'checked_ontop' => false
+          ));
+          
+          ?>
         </ul>
       </div>
       <p class="required">* Required: At least one media type</p>
+      <div id="media-other"><?php $reg->text_input('media_other', ''); ?></div>
     </div>
     <div class="float nudge-right">
       <h3>Other Features - My show:</h3>
       <div id="attributes" class="taxonomy">
         <ul>
-          <?php wp_terms_checklist($post->ID, array('taxonomy' => 'attributes')); ?>
+          <?php
+          
+          wp_terms_checklist($post->ID, array(
+            'taxonomy' => 'attributes',
+            'checked_ontop' => false
+          ));
+          
+          ?>
         </ul>
       </div>
     </div>

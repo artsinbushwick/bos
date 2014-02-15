@@ -17,7 +17,7 @@ document.id(window).addEvent('domready', function() {
     check_excerpt_length.periodical(100);
   }
   if ($('media-other')) {
-    $('media-other').inject($('media-6'), 'after');
+    $('media-other').inject($$('#media > ul > li:last-child')[0]);
   }
   if ($('paypal')) {
     $('paypal').position({

@@ -151,14 +151,28 @@ p.or {
   margin-left: 0 !important;
 }
 
-#media-1,
-#media-2,
-#media-3,
-#media-4,
-#media-5,
-#media-44 {
+#media {
+  padding-top: 0;
+  height: 285px;
+}
+
+#media li {
   font-weight: bold;
   margin: 10px 0;
+}
+
+#media li input {
+  display: none;
+}
+
+#media li li {
+  font-weight: normal;
+  margin: 0;
+}
+
+#media li li input,
+#media li:last-child input {
+  display: inline;
 }
 
 .taxonomy .children {
@@ -168,43 +182,12 @@ p.or {
 }
 
 #media-other {
-  margin-bottom: 15px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #EC008C;
-}
-
-#media-1 li,
-#media-2 li,
-#media-3 li,
-#media-4 li,
-#media-5 li,
-#media-44 li {
-  font-weight: normal;
-}
-
-#media-1 input,
-#media-2 input,
-#media-3 input,
-#media-4 input,
-#media-5 input,
-#media-44 input {
-  display: none;
-}
-
-#media-1 .children input,
-#media-2 .children input,
-#media-3 .children input,
-#media-4 .children input,
-#media-5 .children input,
-#media-6 input,
-#media-44 .children input {
-  display: inline;
-  margin-right: 3px;
+  padding-bottom: 10px;
 }
 
 #media-other input {
   width: 120px;
-  margin-left: 20px;
+  margin-left: 25px;
 }
 
 .taxonomy ul {

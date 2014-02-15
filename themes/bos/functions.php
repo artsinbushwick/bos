@@ -5,10 +5,72 @@ require __DIR__ . '/registration/registration.php';
 
 class BOS_Theme extends Theme {
   
+  /*
+  
+  These terms get created when the theme is activated. Since they are sorted by
+  ID, you will need to delete all of them to insert one in the middle of a list.
+  To regenerate the list, just deactivate/reactivate the theme.
+  
+  */
+  var $media_terms = array(
+    'Visual Arts' => array(
+      'Painting',
+      'Photography',
+      'Drawing',
+      'Sculpture',
+      'Printmaking',
+      'Installation',
+      'Book Arts',
+      'Street Art',
+      'Mixed Media'
+    ),
+    'Performing Arts' => array(
+      'Music',
+      'Theater',
+      'Dance',
+      'Performance Art',
+      'Comedy'
+    ),
+    'Design/Media/Craft' => array(
+      'Industrial Design',
+      'Film',
+      'Video',
+      'Graphic Design',
+      'Fashion/Clothing/Jewelry',
+      'Craft/Folk Arts',
+      'Technology/Electronics/Computers',
+      'Food/Culinary Arts',
+      'Architecture'
+    ),
+    'Miscellaneous' => array(
+      'Writing/Literary Arts',
+      'Discussion/Panel',
+      'Workshop',
+      'Walking Tours',
+      'Environmental/Activist Art'
+    ),
+    'Other' => array()
+  );
+  
+  var $attribute_terms = array(
+    'Is Child-Friendly',
+    'Is Participatory/Interactive',
+    'Will Take Place Outdoors',
+    'Will Have Free Food',
+    'Will Have Food For Sale',
+    'Will Have Free Drinks',
+    'Will Have Drinks For Sale',
+    'Will Include Work For Sale',
+    'Hablamos Español',
+    'Handicapped-accessible'
+  );
+  
   function __construct() {
     $this->add_action('init');
+    $this->add_action('after_switch_theme');
     $this->add_action('widgets_init');
     $this->add_action('customize_register');
+    $this->add_action('get_terms_orderby');
     $this->registration = new AIB_Registration();
   }
   
@@ -18,6 +80,27 @@ class BOS_Theme extends Theme {
       'secondary-menu' => 'Above logo',
       'footer-menu' => 'Bottom of page'
     ));
+  }
+  
+  function after_switch_theme() {
+    foreach ($this->media_terms as $category => $terms) {
+      $cat_term = term_exists($category, 'media', 0);
+      if (!$cat_term) {
+        $cat_term = wp_insert_term($category, 'media');
+      }
+      foreach ($terms as $term) {
+        if (!term_exists($term, 'media', $cat_term['term_id'])) {
+          wp_insert_term($term, 'media', array(
+            'parent' => $cat_term['term_id']
+          ));
+        }
+      }
+    }
+    foreach ($this->attribute_terms as $term) {
+      if (!term_exists($term, 'attributes', 0)) {
+        wp_insert_term($term, 'attributes');
+      }
+    }
   }
   
   function widgets_init() {
@@ -53,6 +136,10 @@ class BOS_Theme extends Theme {
         'settings'   => $id
       )));
     }
+  }
+  
+  function get_terms_orderby() {
+    return 't.term_id';
   }
   
   function page_title() {

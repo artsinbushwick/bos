@@ -34,16 +34,17 @@ class AIB_Registration extends Theme {
       $this->generate_tokens();
       header('Location: /registration-form/');
       exit;
-    } else if (!empty($_POST['task'])) {
-      $method = "post_{$_POST['task']}";
-      if (method_exists($this, $method)) {
-        $this->$method();
-      }
     }
   }
   
   function init() {
     $this->aib = new AIB_Custom_Post();
+    if (!empty($_POST['task'])) {
+      $method = "post_{$_POST['task']}";
+      if (method_exists($this, $method)) {
+        $this->$method();
+      }
+    }
   }
   
   function after_switch_theme() {
