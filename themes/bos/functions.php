@@ -3,6 +3,15 @@
 require __DIR__ . '/lib/theme.php';
 require __DIR__ . '/registration/registration.php';
 
+if (function_exists('add_image_size')) { 
+	add_image_size('bio-thumb', 190, 100, true);
+}
+
+if (function_exists('add_theme_support')) { 
+	add_theme_support('post-thumbnails');
+	add_theme_support('automatic-feed-links');
+}
+
 class BOS_Theme extends Theme {
   
   /*
@@ -79,6 +88,17 @@ class BOS_Theme extends Theme {
       'primary-menu' => 'Below logo',
       'secondary-menu' => 'Above logo',
       'footer-menu' => 'Bottom of page'
+    ));
+    register_post_type('bio', array(
+      'labels' => array(
+        'name' => __('Team Bios'),
+        'singular_name' => __('Bio')
+      ),
+      'supports' => array('title', 'editor', 'thumbnail', 'page-attributes'),
+      'menu_position' => 5,
+      'public' => true,
+      'has_archive' => true,
+      'taxonomies' => array()
     ));
   }
   

@@ -229,6 +229,42 @@ footer .row3 {
   color: #666;
 }
 
+.bios {
+  margin-top: 20px;
+}
+
+.bio {
+  float: left;
+  position: relative;
+  margin: 0 30px 60px 0;
+  
+}
+
+.bio:hover {
+  color: #000;
+}
+
+.bio img {
+  display: block;
+  transition: opacity 0.5s ease 0s;
+}
+
+.bio .hover {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  width: 170px;
+  opacity: 0;
+}
+
+.bio:hover .hover {
+  opacity: 1;
+}
+
+.bio:hover img {
+  opacity: 0.5;
+}
+
 @media (min-width: 630px) {
   
   body {

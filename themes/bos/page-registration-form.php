@@ -1,4 +1,9 @@
 <?php
+/*
+
+Template Name: Registration Form
+
+*/
 
 if (!empty($_GET['images'])) {
   get_template_part('registration/form', 'images');
