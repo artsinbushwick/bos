@@ -196,6 +196,12 @@ footer .row3 {
   display: none;
 }
 
+.sponsors {
+  display: table-cell;
+  vertical-align: middle;
+  height: 330px;
+}
+
 .post {
   padding-top: 15px;
   border-top: 1px solid #ccc;
