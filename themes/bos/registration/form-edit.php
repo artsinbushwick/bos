@@ -37,15 +37,18 @@ if (!empty($_POST['task']) && $_POST['task'] == 'save' && empty($response)) {
         <li><a href="#legal">Terms and Conditions</a></li>
       </ol>
     </div>
-    <p>Welcome to the registration form for BOS<?php echo $year; ?>!  To register a show for BOS<?php echo $year; ?>, please complete the following steps:</p>
+    <p>Welcome to the registration form for BOS<?php echo $year; ?>!</p>
+    <?php the_content(); ?>
+    <p>To register a show for BOS<?php echo $year; ?>, please complete the following steps:</p>
     <ol>
       <li>
-        <p>Enter the information about your show.  A show can be any artistic or creative activity that you would like to have included in the BOS<?php echo $year; ?> Festival program &mdash; as long as you're doing something within the Festival area <link to map> during the weekend of June 1-3, and you want people to come see it, you can go ahead and register here!</p>
+        <p>Enter the information about your show. A show can be any artistic or creative activity that you would like to have included in the BOS<?php echo $year; ?> Festival program &mdash; as long as you're doing something within the Festival area <link to map> during the weekend of <?php echo get_theme_mod('bos_friday_date'); ?>-<?php echo get_theme_mod('bos_sunday_date'); ?>, and you want people to come see it, you can go ahead and register here!</p>
         <p>The information you enter will be used to promote your event in our print program and online, so please fill it out as completely and accurately as possible.</p>
         <p>If you don't have all of your information yet that's OK, you can come back and edit this up until the close of registration on April 28th (for the print program), or up until the weekend of BOS (for the web profiles).</p>
         <p>However, if you're not sure whether you're doing a show, or you don't have a space yet, we ask that you please wait to register until you have your plans in place.  If you need space to show during BOS, you can check out the <a href="<?php bloginfo('url'); ?>/seeking/">Artists Seeking Spaces / Spaces Seeking Artists</a> page and see what spaces or group shows are looking for additional artists.</p>
+        <p>
       </li>
-      <li class="headroom">Upload images.  The images you submit will be displayed online as part of your artist profile.</li>
+      <li class="headroom">Upload images. The images you submit will be displayed online as part of your artist profile.</li>
       <li>
         <p>Contribute.  Since BOS<?php echo $year; ?> is an all-volunteer event, all BOS<?php echo $year; ?> registrants are required contribute to making the Festival happen.  You can contribute in one of two ways:</p>
         <ul>
@@ -134,7 +137,7 @@ whose work will be shown or who is part of making your show happen.</p>
       <p>Please select the date(s) and time(s) of your show.</p>
       <div class="controls float">
         <div class="form-field">
-          <label class="day"><?php $reg->checkbox_input('select_friday'); ?> <strong>Friday, May 31st</strong> <span class="required">*</span></label>
+          <label class="day"><?php $reg->checkbox_input('select_friday'); ?> <strong>Friday, <?php echo get_theme_mod('bos_friday_date'); ?></strong> <span class="required">*</span></label>
           <label class="time">
             Open Hours:
             <?php $reg->text_input('time_friday', ''); ?>
@@ -144,7 +147,7 @@ whose work will be shown or who is part of making your show happen.</p>
             <?php $reg->text_input('additional_time_friday', ''); ?>
           </label>
         </div>
-        <label class="day"><?php $reg->checkbox_input('select_saturday'); ?> <strong>Saturday, June 1st</strong> <span class="required">*</span></label>
+        <label class="day"><?php $reg->checkbox_input('select_saturday'); ?> <strong>Saturday, <?php echo get_theme_mod('bos_saturday_date'); ?></strong> <span class="required">*</span></label>
         <label class="time">
           Open Hours:
           <?php $reg->text_input('time_saturday', ''); ?>
@@ -153,7 +156,7 @@ whose work will be shown or who is part of making your show happen.</p>
           Additional Times:
           <?php $reg->text_input('additional_time_saturday', ''); ?>
         </label>
-        <label class="day"><?php $reg->checkbox_input('select_sunday'); ?> <strong>Sunday, June 2nd</strong> <span class="required">*</span></label>
+        <label class="day"><?php $reg->checkbox_input('select_sunday'); ?> <strong>Sunday, <?php echo get_theme_mod('bos_sunday_date'); ?></strong> <span class="required">*</span></label>
         <label class="time">
           Open Hours:
           <?php $reg->text_input('time_sunday', ''); ?>
