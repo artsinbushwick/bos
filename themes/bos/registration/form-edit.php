@@ -60,31 +60,26 @@ if (!empty($_POST['task']) && $_POST['task'] == 'save' && empty($response)) {
   <h3 class="required">* required fields</h3>
   <fieldset id="basic-info">
     <legend>Basic Show Information</legend>
-    <label class="float">
+    <p class="required">* Required: Individual Artist Name(s) OR Organization Name OR Event Title</p>
+    <label>
       Individual Artist Name(s) <span class="required">*</span> <span class="help">comma-separated</span>
       <?php $reg->text_input('artists', ''); ?>
     </label>
-    <label class="float primary-name">
-      <?php $reg->radio_input('primary_name', 'artists'); ?> Make <em>artist name(s)</em> the primary name for your listing
-    </label>
-    <br class="clear" />
-    <label class="float">
+    <label>
       Organization Name (if applicable) <span class="required">*</span>
       <?php $reg->text_input('organization', ''); ?>
     </label>
-    <label class="float primary-name">
-      <?php $reg->radio_input('primary_name', 'organization'); ?> Make <em>organization name</em> the primary name for your listing
-    </label>
-    <br class="clear" />
-    <label class="float">
+    <label>
       Event Title (if applicable) <span class="required">*</span>
       <?php $reg->text_input('event_name', ''); ?>
     </label>
-    <label class="float primary-name">
-      <?php $reg->radio_input('primary_name', 'event_name'); ?> Make <em>event name</em> the primary name for your listing
+    <label>
+      <?php $reg->radio_input('primary_name', 'artists'); ?> This is an art studio listing. Make <em>artist name(s)</em> the primary name for your listing.
     </label>
-    <br class="clear" />
-    <p class="required">* Required: Individual Artist Name(s) OR Organization Name OR Event Title</p>
+    <label>
+      <?php $reg->radio_input('primary_name', 'event_name'); ?> This is an exhibition. Make <em>event title</em> the primary name for your listing.
+    </label>
+    <hr>
     <label>
       Website <span class="help">comma separate to list more than one</span>
       <?php $reg->text_input('website', ''); ?>
@@ -114,6 +109,7 @@ whose work will be shown or who is part of making your show happen.</p>
     <div class="controls float">
       <label>
         Street Address <span class="required">*</span>
+        <span class="help">Ex: 476 Jefferson St.</span>
         <?php $reg->text_input('street_address'); ?>
       </label>
     </div>
@@ -123,7 +119,7 @@ whose work will be shown or who is part of making your show happen.</p>
     <br class="clear" />
     <div class="form-field float">
       <label>
-        Apartment/Suite/Room <span class="help">i.e., #202, 4R, Ground Floor, etc.</span>
+        Apartment/Suite/Room <span class="help">Ex: #202, #4R, Ground Floor</span>
         <?php $reg->text_input('room_number'); ?>
       </label>
       <label>
