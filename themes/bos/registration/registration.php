@@ -63,7 +63,8 @@ class AIB_Registration extends Theme {
       $aib_login_response = $this->edit_listing($email);
     }
     if (empty($aib_login_response)) {
-      header('Location: /registration-form/');
+      $url = get_bloginfo('url');
+      header("Location: $url/registration-form/");
       exit;
     }
   }
