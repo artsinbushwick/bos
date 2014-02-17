@@ -32,7 +32,8 @@ class AIB_Registration extends Theme {
     }
     if (!empty($_GET['generate_tokens'])) {
       $this->generate_tokens();
-      header('Location: /registration-form/');
+      $url = get_bloginfo('url');
+      header("Location: $url/registration-form/");
       exit;
     }
   }
