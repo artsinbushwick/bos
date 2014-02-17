@@ -197,9 +197,16 @@ footer .row3 {
 }
 
 .sponsors {
+  margin: 15px 0;
+  height: 300px;
+  width: 300px;
+}
+
+.sponsors .inner {
   display: table-cell;
   vertical-align: middle;
-  height: 330px;
+  width: 300px;
+  height: 300px;
 }
 
 .post {
