@@ -80,6 +80,10 @@ class BOS_Theme extends Theme {
     $this->add_action('widgets_init');
     $this->add_action('customize_register');
     $this->add_action('get_terms_orderby');
+    $this->add_action('wp_before_admin_bar_render');
+    $this->add_filter('custom_menu_order');
+    $this->add_action('admin_menu');
+    $this->add_filter('menu_order', 'custom_menu_order');
     $this->registration = new AIB_Registration();
   }
   
@@ -98,6 +102,18 @@ class BOS_Theme extends Theme {
       'menu_position' => 5,
       'public' => true,
       'has_archive' => true,
+      'taxonomies' => array()
+    ));
+    register_post_type('sponsor', array(
+      'labels' => array(
+        'name' => __('Sponsors'),
+        'singular_name' => __('Sponsor')
+      ),
+      'supports' => array('title', 'editor', 'page-attributes'),
+      'menu_position' => 6,
+      'public' => false,
+      'show_ui' => true,
+      'has_archive' => false,
       'taxonomies' => array()
     ));
   }
@@ -156,6 +172,37 @@ class BOS_Theme extends Theme {
         'settings'   => $id
       )));
     }
+  }
+  
+  function wp_before_admin_bar_render() {
+    global $wp_admin_bar;
+    $wp_admin_bar->remove_menu('comments');
+    $wp_admin_bar->remove_menu('post');
+    $wp_admin_bar->remove_menu('wp-logo');
+  }
+  
+  function admin_menu() {
+    remove_menu_page('edit.php');           // Posts
+    remove_menu_page('edit-comments.php');  // Comments
+  }
+  
+  function custom_menu_order($menu_ord) {
+    if (!$menu_ord) {
+      return true;
+    }
+    return array(
+      'index.php',                      // Dashboard
+      'edit.php?post_type=page',        // Pages
+      'edit.php?post_type=sponsor',     // Sponsors
+      'edit.php?post_type=bio',         // Team Bios
+      'edit.php?post_type=aib',         // Listings
+      'separator1',                     // First separator
+      'upload.php',                     // Media
+      'themes.php',                     // Appearance
+      'plugins.php',                    // Plugins
+      'tools.php',                      // Tools
+      'users.php',                      // Users
+    );
   }
   
   function get_terms_orderby() {
