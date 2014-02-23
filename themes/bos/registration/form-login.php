@@ -16,11 +16,11 @@ $reg = $bos->registration;
     <div class="fields">
       <label>
         <?php $reg->radio_input('action', 'create', array('checked' => (v('action') != 'edit'))); ?>
-        Start a new listing
+        Start a new BOS <?php echo $reg->get_year(); ?> listing
       </label>
       <label>
         <?php $reg->radio_input('action', 'edit', array('checked' => (v('action') == 'edit'))); ?>
-        Edit an existing listing
+        Edit an existing BOS <?php echo $reg->get_year(); ?> listing
       </label>
       <label>
         Email address

@@ -85,6 +85,7 @@ class AIB_Registration extends Theme {
       'post_excerpt' => $post_excerpt
     );
     
+    $durational = 0;
     if (!empty($primary_name)) {
       if ($primary_name == 'artists') {
         $post['post_title'] = $artists;
@@ -92,6 +93,9 @@ class AIB_Registration extends Theme {
         $post['post_title'] = $organization;
       } else if ($primary_name == 'event_name') {
         $post['post_title'] = $event_name;
+      } else if ($primary_name == 'event_name_durational') {
+        $post['post_title'] = $event_name;
+        $durational = 1;
       }
     }
     wp_update_post($post);
@@ -105,6 +109,7 @@ class AIB_Registration extends Theme {
       'organization' => stripslashes($organization),
       'event_name' => stripslashes($event_name),
       'primary_name' => $primary_name,
+      'durational' => $durational,
       'website' => $website,
       'artist_count' => $artist_count,
       'space_name' => stripslashes($space_name),
@@ -199,12 +204,14 @@ class AIB_Registration extends Theme {
   
   function edit_listing($email) {
     $response = $this->login_user($email, $_POST['password']);
-    if (is_numeric($response)) {
+    if (!is_numeric($response)) {
+      return $response;
+    } else if (!$this->registration_exists($email)) {
+      return '<ul><li>Oops, it appears that email address has <strong>not</strong> started the registration process for this year’s festival. Please try the "start a new listing" option.</li></ul>';
+    } else {
       $url = get_bloginfo('url');
       wp_safe_redirect("$url/registration-form/");
       exit;
-    } else {
-      return $response;
     }
   }
   
@@ -621,6 +628,9 @@ The BOS registration robot
   
   function generate_tokens() {
     global $wpdb, $blog_id;
+    if (!$this->check_user_role('administrator')) {
+      return;
+    }
     $alphanumerics = '0123456789ABCDEFGHIJKLMNPQRSTUVWXYZ';
     for ($i = 0; $i < 100; $i++) {
       $token = '';
@@ -759,6 +769,9 @@ The BOS registration robot
   }
   
   function check_user_role($role, $user_id = null ) {
+    if (is_super_admin()) {
+      return true;
+    }
     if (is_numeric($user_id)) {
       $user = get_userdata($user_id);
     } else {

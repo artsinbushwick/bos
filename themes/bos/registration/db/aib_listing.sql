@@ -11,6 +11,7 @@ CREATE TABLE `aib_listing` (
   `event_name` varchar(255) DEFAULT NULL,
   `primary_name` varchar(255) DEFAULT NULL,
   `primary_name_selection` varchar(255) DEFAULT NULL,
+  `durational` tinyint(4) DEFAULT NULL,
   `website` varchar(255) DEFAULT NULL,
   `artist_count` varchar(10) DEFAULT NULL,
   `space_name` varchar(255) DEFAULT NULL,

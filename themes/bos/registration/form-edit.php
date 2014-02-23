@@ -82,6 +82,9 @@ if (!empty($_POST['task']) && $_POST['task'] == 'save' && empty($response)) {
     <label>
       <?php $reg->radio_input('primary_name', 'event_name'); ?> This is an exhibition. Make <em>event title</em> the primary name for your listing.
     </label>
+    <label>
+      <?php $reg->radio_input('primary_name', 'event_name_durational'); ?> This is a durational event (performance, screening, lecture, etc.) Make <em>event title</em> the primary name for your listing.
+    </label>
     <hr>
     <label>
       Website <span class="help">comma separate to list more than one</span>
