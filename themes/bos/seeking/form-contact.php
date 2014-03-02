@@ -1,16 +1,18 @@
 <?php
 
-global $bos;
+global $bos, $post;
 $seeking = $bos->seeking;
 $contact = $seeking->get_contact($_GET['contact']);
+$url = get_permalink($post->ID);
 
 ?>
-<p><a href="/seeking/">Go back to seeking listings</a></p>
+<p><a href="<?php echo $url; ?>">Go back to seeking listings</a></p>
 <form action="<?php echo $_SERVER['REQUEST_URI']; ?>" method="post" class="headroom">
   <input type="hidden" name="task" value="contact_seeking" />
   <input type="hidden" name="contact_id" value="<?php echo $contact->id; ?>" />
   <fieldset>
     <legend>Contact <?php echo $contact->name; ?></legend>
+    <?php $seeking->feedback(); ?>
     <label>
       Your name
       <?php $seeking->text_input('contact_name', v('contact_name')); ?>

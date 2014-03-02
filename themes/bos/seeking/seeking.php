@@ -23,7 +23,7 @@ class AIB_Seeking extends Form {
 
   function feedback() {
     if (!empty($this->response)) {
-      echo "<p id=\"response\">$this->response</p>\n";
+      echo "<p id=\"response\">{$this->response}</p>\n";
     }
   }
 
@@ -111,6 +111,10 @@ END;
       $this->response = 'Oops, you failed the spambot challenge.';
     }
 
+    if (!empty($this->response)) {
+      return;
+    }
+
     $contact = $this->get_contact($_POST['contact_id']);
     $blog_name = get_bloginfo('name');
     $url = get_bloginfo('url');
@@ -120,7 +124,7 @@ END;
     $reply_to = "{$_POST['name']} <{$_POST['email']}>";
     $headers = "From: $from\r\nReply-To: $reply_to\r\n";
     $subject = "Response to your $blog_name listing";
-    $message = "Message from {$_POST['name']} ({$_POST['email']}) in response to your listing for $blog_name ($url/seeking/):
+    $message = "Message from {$_POST['contact_name']} ({$_POST['email']}) in response to your listing for $blog_name ($url/seeking/):
 
   {$_POST['message']}
 
@@ -139,7 +143,7 @@ END;
       FROM aib_seeking
       WHERE id = %d
     ", $id));
-    $this->response = $contact;
+    return $contact;
   }
 
 }
