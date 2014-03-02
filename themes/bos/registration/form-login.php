@@ -42,7 +42,7 @@ $reg = $bos->registration;
       </div>
     </div>
     <div class="info">
-      <p><strong>If you would like to register for BOS <?php echo $reg->get_year(); ?> using and email address that you used for a prior year’s listing:</strong> You will need to Start a New Listing, using the same password you used last year.  If you have forgotten that password, you will need to <a href="/wp-login.php?action=lostpassword" class="auth">reset your password</a>.  You will receive an email from the WordPress system, with a link to follow to reset your password.  Once you have reset your password in the WordPress system, you may return here to create your new BOS <?php echo $reg->get_year(); ?> listing.  If you have difficulty resetting your password, feel free to contact us at <a href="mailto:registration@artsinbushwick.org">registration@artsinbushwick.org</a>.</p>
+      <p><strong>If you would like to register for BOS <?php echo $reg->get_year(); ?> using an email address that you used for a prior year’s listing:</strong> You will need to Start a New Listing, using the same password you used last year.  If you have forgotten that password, you will need to <a href="/wp-login.php?action=lostpassword" class="auth">reset your password</a>.  You will receive an email from the WordPress system, with a link to follow to reset your password.  Once you have reset your password in the WordPress system, you may return here to create your new BOS <?php echo $reg->get_year(); ?> listing.  If you have difficulty resetting your password, feel free to contact us at <a href="mailto:registration@artsinbushwick.org">registration@artsinbushwick.org</a>.</p>
     </div>
     <br class="clear">
     <input type="submit" value="Register" id="submit_register" class="button" />

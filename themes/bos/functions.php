@@ -1,25 +1,26 @@
 <?php
 
-require __DIR__ . '/lib/theme.php';
-require __DIR__ . '/registration/registration.php';
+require_once __DIR__ . '/lib/theme.php';
+require_once __DIR__ . '/registration/registration.php';
+require_once __DIR__ . '/seeking/seeking.php';
 
-if (function_exists('add_image_size')) { 
+if (function_exists('add_image_size')) {
 	add_image_size('bio-thumb', 190, 100, true);
 }
 
-if (function_exists('add_theme_support')) { 
+if (function_exists('add_theme_support')) {
 	add_theme_support('post-thumbnails');
 	add_theme_support('automatic-feed-links');
 }
 
 class BOS_Theme extends Theme {
-  
+
   /*
-  
+
   These terms get created when the theme is activated. Since they are sorted by
   ID, you will need to delete all of them to insert one in the middle of a list.
   To regenerate the list, just deactivate/reactivate the theme.
-  
+
   */
   var $media_terms = array(
     'Visual Arts' => array(
@@ -60,7 +61,7 @@ class BOS_Theme extends Theme {
     ),
     'Other' => array()
   );
-  
+
   var $attribute_terms = array(
     'Is Child-Friendly',
     'Is Participatory/Interactive',
@@ -73,7 +74,7 @@ class BOS_Theme extends Theme {
     'Hablamos Español',
     'Handicapped-accessible'
   );
-  
+
   function __construct() {
     $this->add_action('init');
     $this->add_action('after_switch_theme');
@@ -85,8 +86,9 @@ class BOS_Theme extends Theme {
     $this->add_action('admin_menu');
     $this->add_filter('menu_order', 'custom_menu_order');
     $this->registration = new AIB_Registration();
+		$this->seeking = new AIB_Seeking();
   }
-  
+
   function init() {
     register_nav_menus(array(
       'primary-menu' => 'Below logo',
@@ -117,7 +119,7 @@ class BOS_Theme extends Theme {
       'taxonomies' => array()
     ));
   }
-  
+
   function after_switch_theme() {
     foreach ($this->media_terms as $category => $terms) {
       $cat_term = term_exists($category, 'media', 0);
@@ -138,7 +140,7 @@ class BOS_Theme extends Theme {
       }
     }
   }
-  
+
   function widgets_init() {
     register_sidebar( array(
       'name' => 'Sidebar',
@@ -149,7 +151,7 @@ class BOS_Theme extends Theme {
       'after_title' => '</h3>',
     ));
   }
-  
+
   function customize_register($wp_customize) {
     $wp_customize->add_section('bos', array(
       'title'      => __('Bushwick Open Studios', 'bos'),
@@ -173,19 +175,19 @@ class BOS_Theme extends Theme {
       )));
     }
   }
-  
+
   function wp_before_admin_bar_render() {
     global $wp_admin_bar;
     $wp_admin_bar->remove_menu('comments');
     $wp_admin_bar->remove_menu('post');
     $wp_admin_bar->remove_menu('wp-logo');
   }
-  
+
   function admin_menu() {
     remove_menu_page('edit.php');           // Posts
     remove_menu_page('edit-comments.php');  // Comments
   }
-  
+
   function custom_menu_order($menu_ord) {
     if (!$menu_ord) {
       return true;
@@ -204,11 +206,11 @@ class BOS_Theme extends Theme {
       'users.php',                      // Users
     );
   }
-  
+
   function get_terms_orderby() {
     return 't.term_id';
   }
-  
+
   function page_title() {
     $title = wp_title('|', false, 'right');
     $title .= get_bloginfo('name');
@@ -218,19 +220,19 @@ class BOS_Theme extends Theme {
     }
     return strip_tags($title);
   }
-  
+
   function header_count() {
     $dir = get_template_directory() . '/headers';
     $headers = glob("$dir/header*.jpg");
     return count($headers);
   }
-  
+
 }
 $bos = new BOS_Theme();
 
 // This walker class is used for the footer links, to split them into 3 columns
 class BOS_Walker_Nav_Menu extends Walker_Nav_Menu {
-  
+
   function start_el(&$output, $item, $depth, $args) {
     global $wp_query;
     if (empty($this->index)) {
@@ -256,10 +258,10 @@ class BOS_Walker_Nav_Menu extends Walker_Nav_Menu {
       $args->link_after,
       $args->after
     );
-  
+
     // build html
     $output .= apply_filters('walker_nav_menu_start_el', $item_output, $item, $depth, $args);
     $this->index++;
   }
-  
+
 }

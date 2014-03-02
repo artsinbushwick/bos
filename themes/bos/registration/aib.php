@@ -3,14 +3,14 @@
 if (!class_exists('AIB_Custom_Post')) {
 
   class AIB_Custom_Post extends Custom_Post_Type {
-    
-    var $dir = AIB_DIR;
-    var $path = AIB_PATH;
-    var $version = AIB_VERSION;
+
+    var $version = 0.3;
     var $post_type = 'aib';
     var $editable = true;
-    
+
     function __construct() {
+      $this->dir = get_template_directory_uri() . '/registration';
+      $this->path = get_template_directory() . '/registration';
       $this->setup_post(array(
         'label' => __('Listings'),
         'singular_label' => __('Listing'),
@@ -19,7 +19,7 @@ if (!class_exists('AIB_Custom_Post')) {
         ),
         'exclude_from_search' => false
       ));
-      
+
       $this->setup_taxonomy('locations', array(
         'label' => __('Locations')
       ));
@@ -29,19 +29,19 @@ if (!class_exists('AIB_Custom_Post')) {
       $this->setup_taxonomy('attributes', array(
         'label' => __('Attributes')
       ));
-      
+
       add_filter('get_terms', array(&$this, 'cleanup_term_names'));
       add_action('admin_print_styles-media-upload-popup', array(&$this, 'hide_image_controls'));
-      
+
     }
-    
+
     function edit_post($post) {
       wp_enqueue_style($this->post_type, "$this->dir/$this->post_type.css", array(), $this->version, 'all');
       wp_enqueue_script($this->post_type, "$this->dir/$this->post_type.js", array('jquery'), $this->version, true);
       remove_meta_box('locationsdiv', $this->post_type, 'side');
-      
+
       $type = $post->post_type;
-      
+
       $text_fields = array(
         'organization',
         'url',
@@ -54,7 +54,7 @@ if (!class_exists('AIB_Custom_Post')) {
       foreach ($text_fields as $field) {
         $post->$field = esc_attr($this->get($post->ID, $field));
       }
-      
+
       $checkbox_fields = array(
         'select_friday',
         'select_saturday',
@@ -67,16 +67,16 @@ if (!class_exists('AIB_Custom_Post')) {
           $post->$field = ' checked="checked"';
         }
       }
-      
+
       $listing_type = $this->get($post->ID, 'listing_type');
       if ($listing_type == 'open_studio') {
         $post->type_open_studio = ' checked="checked"';
       } else if ($listing_type == 'event') {
         $post->type_event = ' checked="checked"';
       }
-      
+
       $post->url = esc_attr($this->get($post->ID, 'url'));
-      
+
       $locations = get_terms("locations", 'hide_empty=0');
       $locations_selected = wp_get_object_terms($post->ID, "locations");
       foreach ($locations as $location) {
@@ -84,11 +84,11 @@ if (!class_exists('AIB_Custom_Post')) {
         $location_options .= "<option$selected>$location->name</option>\n";
       }
       $post->location_options = $location_options;
-      
+
       if (!empty($locations_selected)) {
         $post->locations_existing = ' checked="checked"';
       }
-      
+
       $sections = array(
         'listing' => __('General Info'),
         'details' => __('Open Studios or Event Information'),
@@ -102,7 +102,7 @@ if (!class_exists('AIB_Custom_Post')) {
         add_meta_box($id, $label, $callback, $type, 'normal', 'high');
       }
     }
-    
+
     function save_post($id) {
       $fields = array(
         'organization',
@@ -136,20 +136,20 @@ if (!class_exists('AIB_Custom_Post')) {
         }
       }
     }
-    
+
     function cleanup_term_names($terms) {
       if (is_array($terms)) {
         array_walk($terms, array(&$this, 'cleanup_term_name'));
       }
       return $terms;
     }
-    
+
     function cleanup_term_name($term) {
       if (is_object($term) && $term->taxonomy == 'media' || $term->taxonomy == 'attributes') {
         $term->name = preg_replace('/^\d+\s+(.+)/', '$1', $term->name);
       }
     }
-    
+
     function hide_image_controls() {
       return;
       echo <<<END
@@ -163,9 +163,9 @@ if (!class_exists('AIB_Custom_Post')) {
 </style>
 END;
     }
-    
+
   }
-  
+
 }
 
 ?>

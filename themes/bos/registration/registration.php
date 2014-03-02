@@ -1,11 +1,8 @@
 <?php
 
-define('AIB_DIR',  get_template_directory_uri() . '/registration');
-define('AIB_PATH', get_template_directory() . '/registration');
-define('AIB_VERSION', '0.3');
-
-require __DIR__ . '/lib/custom-post-type.php';
-require __DIR__ . '/aib.php';
+require_once __DIR__ . '/../lib/custom-post-type.php';
+require_once __DIR__ . '/../lib/form.php';
+require_once __DIR__ . '/aib.php';
 
 // Return a escaped POST value, if one exists
 if (!function_exists('v')) {
@@ -18,8 +15,8 @@ if (!function_exists('v')) {
   }
 }
 
-class AIB_Registration extends Theme {
-  
+class AIB_Registration extends Form {
+
   function __construct() {
     $this->add_action('init');
     $this->add_action('after_switch_theme');
@@ -37,7 +34,7 @@ class AIB_Registration extends Theme {
       exit;
     }
   }
-  
+
   function init() {
     $this->aib = new AIB_Custom_Post();
     if (!empty($_POST['task'])) {
@@ -47,12 +44,12 @@ class AIB_Registration extends Theme {
       }
     }
   }
-  
+
   function after_switch_theme() {
     // Setup MySQL tables if they haven't already been created
     $this->setup_db_tables();
   }
-  
+
   function post_login() {
     global $aib_login_response;
     $email = trim(strtolower($_POST['email']));
@@ -68,23 +65,23 @@ class AIB_Registration extends Theme {
       exit;
     }
   }
-  
+
   function post_save() {
     global $wpdb, $blog_id;
-    
+
     unset($_POST['blog_id']);
     extract($_POST);
-    
+
     if (strlen($post_excerpt) > 140) {
       $post_excerpt = substr($post_excerpt, 0, 140);
     }
-    
+
     $post = array(
       'ID' => $post_id,
       'post_content' => $long_description,
       'post_excerpt' => $post_excerpt
     );
-    
+
     $durational = 0;
     if (!empty($primary_name)) {
       if ($primary_name == 'artists') {
@@ -99,11 +96,11 @@ class AIB_Registration extends Theme {
       }
     }
     wp_update_post($post);
-    
+
     if (!empty($website) && substr($website, 0, 4) != 'http') {
       $website = "http://$website";
     }
-    
+
     $wpdb->update('aib_listing', array(
       'artists' => stripslashes($artists),
       'organization' => stripslashes($organization),
@@ -139,21 +136,21 @@ class AIB_Registration extends Theme {
       'benefit_interest' => (empty($benefit_interest) ? '0' : '1'),
       'long_description' => stripslashes($long_description)
     ), array('post_id' => $post_id, 'site_id' => $blog_id));
-    
+
     if (!empty($tax_input['media'])) {
       $terms = array_map('intval', $tax_input['media']);
     } else {
       $terms = array();
     }
     wp_set_object_terms($post_id, $terms, 'media');
-    
+
     if (!empty($tax_input['attributes'])) {
       $terms = array_map('intval', $tax_input['attributes']);
     } else {
       $terms = array();
     }
     wp_set_object_terms($post_id, $terms, 'attributes');
-    
+
     $post = get_post($post_id);
     $listing = $wpdb->get_row("
       SELECT *
@@ -161,12 +158,12 @@ class AIB_Registration extends Theme {
       WHERE post_id = $post_id
         AND site_id = $blog_id
     ");
-    
+
     foreach (get_object_vars($listing) as $key => $value) {
       $post->$key = $value;
     }
     $wpdb->update('wp_posts', array(
-      'post_content' => 
+      'post_content' =>
         $this->get_content($post) . "\n" .
         $this->get_subtitle($post) . "\n" .
         $this->get_show_location($post) . "\n" .
@@ -175,7 +172,7 @@ class AIB_Registration extends Theme {
         $this->get_show_links($post) . "\n"
     ), array('ID' => $post->ID));
   }
-  
+
   function create_listing($email) {
     $token = trim(strtoupper($_POST['token']));
     if (!$this->confirm_token($token)) {
@@ -183,25 +180,25 @@ class AIB_Registration extends Theme {
     } else if ($this->registration_exists($email)) {
       return '<ul><li>Oops, it appears that email address has already started the registration process for this year’s festival. Please try the "edit an existing listing" option.</li></ul>';
     }
-    
+
     if (!email_exists($email)) {
       $response = $this->register_user($email);
     } else {
       $response = $this->setup_existing_user($email);
     }
-    
+
     if (!is_numeric($response)) {
       return $response;
     }
     $user_id = $response;
-    
+
     $this->setup_aib_post($user_id, $email);
     $this->claim_token($user_id, $token);
-    
+
     // No errors
     return null;
   }
-  
+
   function edit_listing($email) {
     $response = $this->login_user($email, $_POST['password']);
     if (!is_numeric($response)) {
@@ -214,7 +211,7 @@ class AIB_Registration extends Theme {
       exit;
     }
   }
-  
+
   function get_content($post) {
     $content = apply_filters('the_content', $post->post_content);
     if (empty($content) && !empty($post->post_excerpt)) {
@@ -222,7 +219,7 @@ class AIB_Registration extends Theme {
     }
     return $content;
   }
-  
+
   function get_subtitle($post) {
     $key = $post->primary_name;
     $subtitle = array();
@@ -237,7 +234,7 @@ class AIB_Registration extends Theme {
     }
     return implode(', ', $subtitle);
   }
-  
+
   function get_show_location($post) {
     if (empty($this->locations)) {
       $this->load_locations();
@@ -257,7 +254,7 @@ class AIB_Registration extends Theme {
       return "$title$location->address$room<br />Brooklyn, NY $location->zip";
     }
   }
-  
+
   function load_locations() {
     global $wpdb;
     if (!empty($this->locations)) {
@@ -272,7 +269,7 @@ class AIB_Registration extends Theme {
       $this->locations[$object->id] = $object;
     }
   }
-  
+
   function get_location_title($post) {
     if (empty($this->locations)) {
       $this->load_locations();
@@ -286,7 +283,7 @@ class AIB_Registration extends Theme {
       return '';
     }
   }
-  
+
   function get_show_media($post) {
     $terms = wp_get_object_terms($post->ID, 'media');
     $media = array();
@@ -300,7 +297,7 @@ class AIB_Registration extends Theme {
     }
     return implode(", ", $media);
   }
-  
+
   function get_show_features($post) {
     $terms = wp_get_object_terms($post->ID, 'attributes');
     $attributes = array();
@@ -315,7 +312,7 @@ class AIB_Registration extends Theme {
       return implode("<br />\n", $attributes);
     }
   }
-  
+
   function get_show_links($post) {
     global $wpdb;
     $result = '';
@@ -339,10 +336,10 @@ class AIB_Registration extends Theme {
     $result .= "&raquo; <a href=\"mailto:$email\">Contact</a><br />";
     return $result;
   }
-  
+
   function setup_aib_post($user_id, $email) {
     global $wpdb, $blog_id;
-    
+
     $post_id = wp_insert_post(array(
       'post_type' => 'aib',
       'post_title' => $email,
@@ -351,16 +348,16 @@ class AIB_Registration extends Theme {
       'post_author' => $user_id,
       'post_category' => array()
     ));
-    
+
     $wpdb->query($wpdb->prepare("
       INSERT INTO aib_listing
       (site_id, post_id, user_id)
       VALUES (%d, %d, %d)
     ", $blog_id, $post_id, $user_id));
-    
+
     update_user_meta($user_id, 'aib_post_' . AIB_EVENT, $post_id);
   }
-  
+
   function register_user($email) {
     global $table_prefix;
     $password = $_POST['password'];
@@ -381,7 +378,7 @@ class AIB_Registration extends Theme {
     }
     return $this->login_user($email, $password);
   }
-  
+
   function setup_existing_user($email) {
     $response = $this->login_user($email, $_POST['password']);
     if (is_numeric($response)) {
@@ -395,7 +392,7 @@ class AIB_Registration extends Theme {
       clean_user_cache($user_id);
       $url = get_bloginfo('url');
       $year = $this->get_year();
-      
+
       wp_mail($email, 'Bushwick Open Studios registration', "
 Thank you for registering again for BOS$year! You can login here:
 
@@ -423,21 +420,21 @@ The BOS registration robot
     }
     return $response;
   }
-  
+
   // Wrapper for WordPress registration code
   function create_new_user($user_email, $user_pass, $confirm_password) {
     $errors = new WP_Error();
-    
+
     $user_login = $this->get_username($user_email);
     $user_login = sanitize_user( $user_login );
     $user_email = apply_filters( 'user_registration_email', $user_email );
-  
+
     // Check the username
     if ( !validate_username( $user_login ) ) {
       $errors->add('invalid_username', __('<strong>ERROR</strong>: This username is invalid.  Please enter a valid username.'));
       $user_login = '';
     }
-    
+
     // Check the password
     if ($user_pass == '') {
       $errors->add('empty_password', __('<strong>ERROR</strong>: Please type a password.'));
@@ -446,7 +443,7 @@ The BOS registration robot
       $errors->add('invalid_password', __('<strong>ERROR</strong>: Your passwords did not match. Please try again.'));
       $user_pass = '';
     }
-    
+
     // Check the e-mail address
     if ($user_email == '') {
       $errors->add('empty_email', __('<strong>ERROR</strong>: Please type your e-mail address.'));
@@ -455,21 +452,21 @@ The BOS registration robot
       $user_email = '';
     } elseif ( email_exists( $user_email ) )
       $errors->add('email_exists', __('<strong>ERROR</strong>: This email is already registered. Try choosing <em>edit an existing listing</em> or <a href="/wp-login.php?action=lostpassword">retrieving your password</a>.'));
-  
+
     do_action('register_post', $user_login, $user_email, $errors);
-  
+
     $errors = apply_filters( 'registration_errors', $errors, $user_login, $user_email );
-  
+
     if ( $errors->get_error_code() )
       return $errors;
-  
+
     //$user_pass = wp_generate_password();
     $user_id = wp_create_user($user_login, $user_pass, $user_email);
     if ( !$user_id ) {
       $errors->add('registerfail', sprintf(__('<strong>ERROR</strong>: Couldn&#8217;t register you... please contact the <a href="mailto:%s">webmaster</a> !'), get_option('admin_email')));
       return $errors;
     }
-    
+
     $url = get_bloginfo('url');
     wp_mail($user_email, 'Bushwick Open Studios registration', "
 Thank you for registering for BOS$year! In case you forget your login
@@ -493,10 +490,10 @@ Warm regards,
 The BOS registration robot
 
 ");
-    
+
     return $user_id;
   }
-  
+
   function login_user($email, $password) {
     $username = $this->get_username($email);
     $user = wp_signon(array(
@@ -515,7 +512,7 @@ The BOS registration robot
       return $userdata->ID;
     }
   }
-  
+
   function get_username($email) {
     global $wpdb;
     $username = $wpdb->get_var($wpdb->prepare("
@@ -531,7 +528,7 @@ The BOS registration robot
     $username = $username . '_' . substr(md5($email), 0, 6);
     return $username;
   }
-  
+
   function get_user_id() {
     global $userdata;
     get_currentuserinfo();
@@ -540,7 +537,7 @@ The BOS registration robot
     }
     return $userdata->ID;
   }
-  
+
   function get_year() {
     if (defined('AIB_EVENT') && preg_match('/(\d\d\d\d)/', AIB_EVENT, $matches)) {
       return $matches[1];
@@ -548,7 +545,7 @@ The BOS registration robot
       return date('Y');
     }
   }
-  
+
   function confirm_token($token) {
     global $wpdb, $blog_id;
     $user_id = $this->get_user_id();
@@ -570,7 +567,7 @@ The BOS registration robot
     }
     return false;
   }
-  
+
   function claim_token($user_id, $token) {
     global $wpdb, $blog_id;
     $token = trim(strtoupper($token));
@@ -580,7 +577,7 @@ The BOS registration robot
       'available' => 0
     ), array('token' => $token));
   }
-  
+
   function registration_exists($email) {
     global $wpdb;
     $user_id = $wpdb->get_var($wpdb->prepare("
@@ -594,7 +591,7 @@ The BOS registration robot
     $post_id = get_usermeta($user_id, 'aib_post_' . AIB_EVENT);
     return (!empty($post_id));
   }
-  
+
   function setup_db_tables() {
     global $wpdb;
     $tables = array(
@@ -611,7 +608,7 @@ The BOS registration robot
       }
     }
   }
-  
+
   function tokens_status() {
     global $wpdb, $blog_id;
     if (!$this->check_user_role('administrator')) {
@@ -625,7 +622,7 @@ The BOS registration robot
     ", $blog_id));
     echo "<strong>Administrator only</strong><br>$available available registration tokens (<a href=\"?generate_tokens=1\">generate tokens</a>)";
   }
-  
+
   function generate_tokens() {
     global $wpdb, $blog_id;
     if (!$this->check_user_role('administrator')) {
@@ -644,7 +641,7 @@ The BOS registration robot
       ", $token, $blog_id));
     }
   }
-  
+
   function in_progress() {
     $user_id = $this->get_user_id();
     if (is_numeric($user_id)) {
@@ -652,11 +649,11 @@ The BOS registration robot
     }
     return false;
   }
-  
+
   function is_complete() {
     return false;
   }
-  
+
   function get_post($user_id = null) {
     global $wpdb;
     if (empty($user_id)) {
@@ -683,91 +680,7 @@ The BOS registration robot
     }
     return false;
   }
-  
-  function text_input($name, $value = null, $options = null) {
-    global $post;
-    $type = 'text';
-    $id = "input_$name";
-    $class = 'text';
-    if (!empty($post->$name)) {
-      $value = esc_attr($post->$name);
-    }
-    if ($options) {
-      extract($options);
-    }
-    if (!empty($id)) {
-      $id = " id=\"$id\"";
-    }
-    if (!empty($class)) {
-      $class = " class=\"$class\"";
-    }
-    echo "<input type=\"$type\" name=\"$name\" value=\"$value\"$id$class />";
-  }
-  
-  function textarea_input($name, $value = null, $options = null) {
-    global $post;
-    $id = "input_$name";
-    $class = 'text';
-    $rows = 3;
-    $cols = 50;
-    if (!empty($post->$name)) {
-      $value = esc_html($post->$name);
-    }
-    if ($options) {
-      extract($options);
-    }
-    if (!empty($id)) {
-      $id = " id=\"$id\"";
-    }
-    if (!empty($class)) {
-      $class = " class=\"$class\"";
-    }
-    if (!empty($maxlength)) {
-      $maxlength = " maxlength=\"$maxlength\"";
-    }
-    echo "<textarea name=\"$name\" rows=\"$rows\" cols=\"$cols\"$id$class$maxlength>$value</textarea>";
-  }
-  
-  function radio_input($name, $value, $options = null) {
-    global $post;
-    $id = "input_{$name}_$value";
-    $class = 'radio';
-    $checked = ($post->$name == $value);
-    if ($options) {
-      extract($options);
-    }
-    if (!empty($id)) {
-      $id = " id=\"$id\"";
-    }
-    if (!empty($class)) {
-      $class = " class=\"$class\"";
-    }
-    if (!empty($checked)) {
-      $checked = ' checked="checked"';
-    }
-    echo "<input type=\"radio\" name=\"$name\" value=\"$value\"$checked$id$class />";
-  }
-  
-  function checkbox_input($name, $options = null) {
-    global $post;
-    $id = "input_$name";
-    $class = 'checkbox';
-    $checked = (!empty($post->$name));
-    if ($options) {
-      extract($options);
-    }
-    if (!empty($id)) {
-      $id = " id=\"$id\"";
-    }
-    if (!empty($class)) {
-      $class = " class=\"$class\"";
-    }
-    if (!empty($checked)) {
-      $checked = ' checked="checked"';
-    }
-    echo "<input type=\"checkbox\" name=\"$name\" value=\"1\"$checked$id$class />";
-  }
-  
+
   function check_user_role($role, $user_id = null ) {
     if (is_super_admin()) {
       return true;
@@ -782,5 +695,5 @@ The BOS registration robot
     }
     return in_array($role, (array) $user->roles);
   }
-  
+
 }
