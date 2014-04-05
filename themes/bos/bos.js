@@ -47,7 +47,9 @@ function setup_sponsors() {
     tier_index[i] = 0;
   }
   
-  var tier = 0;
+  // [dp] hardcoding to only use a single tier for now
+  //var tier = 0;
+  var tier = 1;
   setInterval(function() {
     var sponsors = $('.sponsors')[tier];
     var index = tier_index[tier];
@@ -57,7 +59,8 @@ function setup_sponsors() {
     tier_index[tier] = index;
     $(visible).fadeOut(400, function() {
       show_sponsor(tier, index);
-      tier = (tier + 1) % tiers;
+      // [dp] hardcoding to only use a single tier for now
+      //tier = (tier + 1) % tiers;
     });
   }, Math.round(5000 / tiers));
   $('.sponsors a.active').fadeIn();
