@@ -10,7 +10,7 @@ global $bos;
           </a>
           <div class="border"></div>
           <div class="about">
-            We are an all volunteer organization; our mission is to promote &amp; support local artists, serve the community at large through arts education, creative accessibility, organizing all residents &amp; stakeholders in Bushwick to fight development-driven displacement &amp; work toward an integrated, sustainable community.
+            It is the mission of Arts in Bushwick to provide a platform for creative minds in the community and work towards an integrated and sustainable neighborhood through arts programming, creative  accessibility, and community organizing.
           </div>
         </div>
         <div class="row2">

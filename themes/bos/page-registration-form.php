@@ -5,6 +5,12 @@ Template Name: Registration Form
 
 */
 
+// Temporarily redirect everyone to "Form is down" page
+//if ($_SERVER['REMOTE_ADDR'] != '173.220.23.227') {
+//  $url = get_bloginfo('url');
+//  header("Location: $url/registration-form-down/");
+//}
+
 if (!empty($_GET['images'])) {
   get_template_part('registration/form', 'images');
 } else {

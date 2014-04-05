@@ -74,7 +74,7 @@ class AIB_Registration extends Form {
 
   function post_save() {
     global $wpdb, $blog_id;
-
+    
     unset($_POST['blog_id']);
     extract($_POST);
 
@@ -101,6 +101,7 @@ class AIB_Registration extends Form {
         $durational = 1;
       }
     }
+    
     wp_update_post($post);
 
     if (!empty($website) && substr($website, 0, 4) != 'http') {
@@ -159,10 +160,44 @@ class AIB_Registration extends Form {
       'include' => $media_terms,
       'hide_empty' => false
     ));
+    $valid_media_cols = array(
+      'painting',
+      'photography',
+      'drawing',
+      'sculpture',
+      'printmaking',
+      'installation',
+      'book_arts',
+      'street_art',
+      'mixed_media',
+      'music',
+      'theater',
+      'dance',
+      'performance_art',
+      'comedy',
+      'industrial_design',
+      'film',
+      'video',
+      'graphic_design',
+      'fashion_clothing_jewelry',
+      'craft_folk_arts',
+      'technology_electronics_computers',
+      'food_culinary_arts',
+      'architecture',
+      'writing_literary_arts',
+      'discussion_panel',
+      'workshop',
+      'walking_tours',
+      'environmental_activist_art',
+      'other_media'
+    );
     foreach ($aib_listing_media_terms as $media_term) {
       $media_col = $this->get_aib_listing_media_column($media_term->slug);
-      $aib_listing[$media_col] = 1;
+      if (in_array($media_col, $valid_media_cols)) {
+        $aib_listing[$media_col] = 1;
+      }
     }
+    
     $wpdb->update('aib_listing', $aib_listing, array(
       'post_id' => $post_id,
       'site_id' => $blog_id
@@ -178,7 +213,7 @@ class AIB_Registration extends Form {
       WHERE post_id = $post_id
         AND site_id = $blog_id
     ");
-
+    
     foreach (get_object_vars($listing) as $key => $value) {
       $post->$key = $value;
     }
@@ -191,11 +226,12 @@ class AIB_Registration extends Form {
         $this->get_show_features($post) . "\n" .
         $this->get_show_links($post) . "\n"
     ), array('ID' => $post->ID));
+    
   }
   
   function get_aib_listing_media_column($slug) {
     $media_col = str_replace('-', '_', $slug);
-    if ($media_col == 'discussion_panel') {
+    if ($media_col == 'discussion_talk') {
       $media_col = 'discussion_forum';
     }
     return $media_col;
@@ -759,6 +795,26 @@ The BOS registration robot
       return false;
     }
     return in_array($role, (array) $user->roles);
+  }
+  
+  function dbug() {
+    if (!$this->is_dbug()) {
+      return;
+    }
+    echo '<pre style="font: 12px/14px menlo; background: #fff; color: #333; text-align: left;">';
+    $args = func_get_args();
+    foreach ($args as $arg) {
+      if (is_scalar($arg)) {
+        echo "$arg\n";
+      } else {
+        print_r($arg);
+      }
+    }
+    echo '</pre>';
+  }
+  
+  function is_dbug() {
+    return ($_SERVER['REMOTE_ADDR'] == '173.220.23.227');
   }
 
 }
