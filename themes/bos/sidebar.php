@@ -1,6 +1,6 @@
 <div id="sidebar">
   <?php
-  /*  
+  
   $sponsorship = get_page_by_path('sponsorship');
   $posts = get_posts(array(
     'post_parent' => $sponsorship->ID,
@@ -23,7 +23,7 @@
         }
     echo "</div></div>\n";
   }
-  */
+  
   ?>
   <?php dynamic_sidebar('sidebar'); ?>
 </div>
