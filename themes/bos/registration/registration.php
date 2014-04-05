@@ -27,16 +27,22 @@ class AIB_Registration extends Form {
       // Generic value for development
       define('AIB_EVENT', 'artsinbushwick');
     }
+  }
+
+  function init() {
+    $this->aib = new AIB_Custom_Post();
     if (!empty($_GET['generate_tokens'])) {
       $this->generate_tokens();
       $url = get_bloginfo('url');
       header("Location: $url/registration-form/");
       exit;
     }
-  }
-
-  function init() {
-    $this->aib = new AIB_Custom_Post();
+    if (!empty($_GET['update_media_columns'])) {
+      $this->update_media_columns();
+      $url = get_bloginfo('url');
+      header("Location: $url/registration-form/");
+      exit;
+    }
     if (!empty($_POST['task'])) {
       $method = "post_{$_POST['task']}";
       if (method_exists($this, $method)) {
@@ -100,8 +106,20 @@ class AIB_Registration extends Form {
     if (!empty($website) && substr($website, 0, 4) != 'http') {
       $website = "http://$website";
     }
+    
+    if (!empty($tax_input['media'])) {
+      $media_terms = array_map('intval', $tax_input['media']);
+    } else {
+      $media_terms = array();
+    }
+    
+    if (!empty($tax_input['attributes'])) {
+      $attributes_terms = array_map('intval', $tax_input['attributes']);
+    } else {
+      $attributes_terms = array();
+    }
 
-    $wpdb->update('aib_listing', array(
+    $aib_listing = array(
       'artists' => stripslashes($artists),
       'organization' => stripslashes($organization),
       'event_name' => stripslashes($event_name),
@@ -135,22 +153,24 @@ class AIB_Registration extends Form {
       'profile_story' => (empty($profile_story) ? '0' : '1'),
       'benefit_interest' => (empty($benefit_interest) ? '0' : '1'),
       'long_description' => stripslashes($long_description)
-    ), array('post_id' => $post_id, 'site_id' => $blog_id));
-
-    if (!empty($tax_input['media'])) {
-      $terms = array_map('intval', $tax_input['media']);
-    } else {
-      $terms = array();
+    );
+    
+    $aib_listing_media_terms = get_terms('media', array(
+      'include' => $media_terms,
+      'hide_empty' => false
+    ));
+    foreach ($aib_listing_media_terms as $media_term) {
+      $media_col = $this->get_aib_listing_media_column($media_term->slug);
+      $aib_listing[$media_col] = 1;
     }
-    wp_set_object_terms($post_id, $terms, 'media');
-
-    if (!empty($tax_input['attributes'])) {
-      $terms = array_map('intval', $tax_input['attributes']);
-    } else {
-      $terms = array();
-    }
-    wp_set_object_terms($post_id, $terms, 'attributes');
-
+    $wpdb->update('aib_listing', $aib_listing, array(
+      'post_id' => $post_id,
+      'site_id' => $blog_id
+    ));
+    
+    wp_set_object_terms($post_id, $media_terms, 'media');
+    wp_set_object_terms($post_id, $attributes_terms, 'attributes');
+    
     $post = get_post($post_id);
     $listing = $wpdb->get_row("
       SELECT *
@@ -171,6 +191,14 @@ class AIB_Registration extends Form {
         $this->get_show_features($post) . "\n" .
         $this->get_show_links($post) . "\n"
     ), array('ID' => $post->ID));
+  }
+  
+  function get_aib_listing_media_column($slug) {
+    $media_col = str_replace('-', '_', $slug);
+    if ($media_col == 'discussion_panel') {
+      $media_col = 'discussion_forum';
+    }
+    return $media_col;
   }
 
   function create_listing($email) {
@@ -200,12 +228,22 @@ class AIB_Registration extends Form {
   }
 
   function edit_listing($email) {
+    global $table_prefix;
     $response = $this->login_user($email, $_POST['password']);
     if (!is_numeric($response)) {
       return $response;
     } else if (!$this->registration_exists($email)) {
       return '<ul><li>Oops, it appears that email address has <strong>not</strong> started the registration process for this year’s festival. Please try the "start a new listing" option.</li></ul>';
     } else {
+      $user_id = $response;
+      $user_level = get_user_meta($user_id, "{$table_prefix}user_level", true);
+      if (empty($user_level)) {
+        update_user_meta($user_id, "{$table_prefix}user_level", 2);
+        update_user_meta($user_id, "{$table_prefix}capabilities", array(
+          'author' => 1
+        ));
+        clean_user_cache($user_id);
+      }
       $url = get_bloginfo('url');
       wp_safe_redirect("$url/registration-form/");
       exit;
@@ -380,6 +418,7 @@ class AIB_Registration extends Form {
   }
 
   function setup_existing_user($email) {
+    global $table_prefix;
     $response = $this->login_user($email, $_POST['password']);
     if (is_numeric($response)) {
       $user_id = $response;
@@ -639,6 +678,32 @@ The BOS registration robot
         INSERT INTO aib_token
         (token, site_id) VALUES (%s, %d)
       ", $token, $blog_id));
+    }
+  }
+  
+  function update_media_columns() {
+    global $wpdb, $blog_id;
+    if (!$this->check_user_role('administrator')) {
+      return;
+    }
+    $listings = $wpdb->get_col($wpdb->prepare("
+      SELECT post_id
+      FROM aib_listing
+      WHERE site_id = %d
+    ", $blog_id));
+    foreach ($listings as $post_id) {
+      $aib_listing_update = array();
+      $media_terms = wp_get_object_terms($post_id, 'media');
+      foreach ($media_terms as $media_term) {
+        $media_col = $this->get_aib_listing_media_column($media_term->slug);
+        $aib_listing_update[$media_col] = 1;
+      }
+      if (!empty($aib_listing_update)) {
+        $wpdb->update('aib_listing', $aib_listing_update, array(
+          'post_id' => $post_id,
+          'site_id' => $blog_id
+        ));
+      }
     }
   }
 
