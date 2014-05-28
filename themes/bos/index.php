@@ -4,9 +4,11 @@
   
   if (have_posts()) {
 		while (have_posts()) {
-			the_post(); 
+		  the_post(); 
 			get_template_part('post');
 		}
+	} else {
+	  echo '<h3>Sorry, nothing was found.</h3>';
 	}
 	
 	?>

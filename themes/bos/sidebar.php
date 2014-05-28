@@ -6,10 +6,15 @@
     'post_parent' => $sponsorship->ID,
     'post_type' => 'page',
     'orderby' => 'menu_order',
-    'order' => 'ASC'
+    'order' => 'ASC',
+    'posts_per_page' => -1
   ));
   
-  foreach ($posts as $post) { ?>
+  foreach ($posts as $post) {
+    if (mb_strpos($post->post_title, 'Tier') === false) {
+      continue;
+    }
+    ?>
     <div class="sponsors">
       <div class="inner">
         <?php

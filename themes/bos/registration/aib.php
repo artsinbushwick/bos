@@ -15,9 +15,14 @@ if (!class_exists('AIB_Custom_Post')) {
         'label' => __('Listings'),
         'singular_label' => __('Listing'),
         'supports' => array(
+          'title',
+          'editor',
           'post-thumbnails'
         ),
-        'exclude_from_search' => false
+        'exclude_from_search' => false,
+        'publicly_queryable' => true,
+        'query_var' => true,
+        'rewrite' => false
       ));
 
       $this->setup_taxonomy('locations', array(
@@ -29,14 +34,13 @@ if (!class_exists('AIB_Custom_Post')) {
       $this->setup_taxonomy('attributes', array(
         'label' => __('Attributes')
       ));
-
-      add_filter('get_terms', array(&$this, 'cleanup_term_names'));
+      
       add_action('admin_print_styles-media-upload-popup', array(&$this, 'hide_image_controls'));
 
     }
 
     function edit_post($post) {
-      wp_enqueue_style($this->post_type, "$this->dir/$this->post_type.css", array(), $this->version, 'all');
+      /*wp_enqueue_style($this->post_type, "$this->dir/$this->post_type.css", array(), $this->version, 'all');
       wp_enqueue_script($this->post_type, "$this->dir/$this->post_type.js", array('jquery'), $this->version, true);
       remove_meta_box('locationsdiv', $this->post_type, 'side');
 
@@ -100,11 +104,11 @@ if (!class_exists('AIB_Custom_Post')) {
         $template = "$this->path/templates/$id.html";
         $callback = create_function('$object', "render_template('$template', \$object);");
         add_meta_box($id, $label, $callback, $type, 'normal', 'high');
-      }
+      }*/
     }
 
     function save_post($id) {
-      $fields = array(
+      /*$fields = array(
         'organization',
         'url',
         'listing_type',
@@ -134,22 +138,9 @@ if (!class_exists('AIB_Custom_Post')) {
           ));
           wp_set_object_terms($id, $_POST['location_name'], 'locations');
         }
-      }
+      }*/
     }
-
-    function cleanup_term_names($terms) {
-      if (is_array($terms)) {
-        array_walk($terms, array(&$this, 'cleanup_term_name'));
-      }
-      return $terms;
-    }
-
-    function cleanup_term_name($term) {
-      if (is_object($term) && $term->taxonomy == 'media' || $term->taxonomy == 'attributes') {
-        $term->name = preg_replace('/^\d+\s+(.+)/', '$1', $term->name);
-      }
-    }
-
+    
     function hide_image_controls() {
       return;
       echo <<<END
