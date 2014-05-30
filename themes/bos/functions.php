@@ -91,6 +91,8 @@ class BOS_Theme extends Theme {
     $this->add_action('wp_ajax_nopriv_bos_directory_search', 'directory_search');
     $this->add_action('wp_ajax_bos_update_post_data', 'update_post_data');
     $this->add_action('wp_ajax_nopriv_bos_update_post_data', 'update_post_data');
+    $this->add_action('wp_ajax_bos_lookup', 'lookup');
+    $this->add_action('wp_ajax_bos_geocode', 'geocode');
     //$this->add_filter('post_type_link', 'post_type_link', 10, 3);
     $this->setup_rewrites();
     $this->registration = new AIB_Registration();
@@ -239,6 +241,10 @@ class BOS_Theme extends Theme {
   function directory_locations($hubs = false) {
     global $wpdb, $blog_id, $table_prefix;
     
+    if (!empty($_GET['hubs'])) {
+      $hubs = true;
+    }
+    
     if ($_SERVER['HTTP_HOST'] == 'dev.artsinbushwick.org') {
       $blog_id = 10;
     }
@@ -250,21 +256,15 @@ class BOS_Theme extends Theme {
         WHERE BOS14number REGEXP '[A-Z]'
         ORDER BY BOS14number
       ");
-      $count = (int) $wpdb->get_var("
-        SELECT COUNT(BOS14number)
-        FROM aib_location
-        WHERE BOS14number REGEXP '[0-9]+'
-      ");
     } else {
-      $offset = (intval($_GET['page']) - 1) * $_GET['count'];
-      $locations = $wpdb->get_results($wpdb->prepare("
+      $locations = $wpdb->get_results("
         SELECT id, BOS14number AS marker, lat, lng, address
         FROM aib_location
         WHERE BOS14number REGEXP '[0-9]+'
         ORDER BY CAST(BOS14number AS UNSIGNED)
-      ", $offset, $_GET['count'])); // LIMIT %d, %d
-      $count = count($locations);
+      ");
     }
+    $count = count($locations);
     $ids = array();
     $location_lookup = array();
     foreach ($locations as $l) {
@@ -277,9 +277,11 @@ class BOS_Theme extends Theme {
       SELECT post_id, location_id, main_image,
              artists, organization, event_name, primary_name, short_description,
              space_name, street_address, room_number, zip_code
-      FROM aib_listing
+      FROM aib_listing, $wpdb->posts
       WHERE site_id = $blog_id
         AND location_id IN ($id_list)
+        AND aib_listing.post_id = $wpdb->posts.ID
+        AND post_status = 'publish'
       ORDER BY order_in_building, post_id
     ");
     $ids = array();
@@ -329,7 +331,32 @@ class BOS_Theme extends Theme {
         }
       }
     }
-    return $locations;
+    $args = array(
+      'fields' => 'all_with_object_id'
+    );
+    $terms = wp_get_object_terms($ids, array('media', 'attributes'), $args);
+    foreach ($terms as $term) {
+      $listing = $listing_lookup[$term->object_id];
+      if ($term->taxonomy == 'attributes') {
+        $term_class = "attrs-$term->slug";
+      } else {
+        $term_class = "media-$term->slug";
+      }
+      if (empty($listing->filter_terms)) {
+        $listing->filter_terms = array($term_class);
+      } else {
+        array_push($listing->filter_terms, $term_class);
+      }
+    }
+    if (strpos($_SERVER['PHP_SELF'], 'admin-ajax.php') !== false &&
+        !empty($_GET['action']) &&
+        $_GET['action'] == 'bos_directory_locations') {
+      header('Content-Type: application/json');
+      echo json_encode($locations);
+      exit;
+    } else {
+      return $locations;
+    }
   }
   
   function pre_get_posts($query) {
@@ -377,6 +404,8 @@ class BOS_Theme extends Theme {
         SELECT ID
         FROM $wpdb->posts
         WHERE post_type = 'aib'
+          AND post_status = 'publish'
+        ORDER BY ID
       ");
     } else if (!empty($_GET['id'])) {
       $ids = intval($_GET['id']);
@@ -385,43 +414,138 @@ class BOS_Theme extends Theme {
         exit;
       }
     }
+    $count = count($ids);
+    echo "Found $count listings\n";
     if (!empty($ids)) {
-      $pos = 0;
-      while ($pos < count($ids)) {
-        $ids_page = array_slice($ids, $pos, 50);
+      $pos = (empty($_GET['pos'])) ? 0 : intval($_GET['pos']);
+      $ids_page = array_slice($ids, $pos, 50);
+      $ids_list = implode(', ', $ids_page);
+      $listings = $wpdb->get_results("
+        SELECT BOS14number, post_id, building_number, building_name, artists, organization, event_name, website, space_name, street_address, room_number, zip_code, short_description, media_other
+        FROM aib_listing, aib_location
+        WHERE post_id IN ($ids_list)
+          AND aib_listing.location_id = aib_location.id
+      ");
+      foreach ($listings as $listing) {
+        $post = get_post($listing->post_id);
+        echo "$post->post_title ($post->ID)\n";
+        $content = preg_replace('#<\!--\[meta\].+\[/meta\]-->#ms', '', $post->post_content);
+        $vars = get_object_vars($listing);
+        $vars['BOS14number'] = "bos:{$vars['BOS14number']}";
+        $values = array_values($vars);
+        $values = implode(" ", $values);
+        $values .= aib_get_show_media($post);
+        $values .= aib_get_show_features($post);
+        $content = "$content\n<!--[meta]{$values}[/meta]-->";
+        wp_update_post(array(
+          'ID' => $listing->post_id,
+          'post_content' => $content
+        ));
+      }
+      if (count($ids_page) == 50) {
         $pos += 50;
-        $ids_list = implode(', ', $ids_page);
-        $listings = $wpdb->get_results("
-          SELECT BOS14number, post_id, building_number, building_name, artists, organization, event_name, website, space_name, street_address, room_number, zip_code, short_description, media_other
-          FROM aib_listing, aib_location
-          WHERE post_id IN ($ids_list)
-            AND aib_listing.location_id = aib_location.id
-        ");
-        foreach ($listings as $listing) {
-          $post = get_post($listing->post_id);
-          echo "$post->post_title ($post->ID)\n";
-          $content = preg_replace('#<\!--\[meta\].+\[/meta\]-->#ms', '', $post->post_content);
-          $vars = get_object_vars($listing);
-          $vars['BOS14number'] = "bos:{$vars['BOS14number']}";
-          $values = array_values($vars);
-          $values = implode(" ", $values);
-          $values .= aib_get_show_media($post);
-          $values .= aib_get_show_features($post);
-          $content = "$content\n<!--[meta]{$values}[/meta]-->";
-          wp_update_post(array(
-            'ID' => $listing->post_id,
-            'post_content' => $content
-          ));
-        }
+        $url = get_bloginfo('url');
+        $next_page = "$url{$_SERVER['PHP_SELF']}?action=bos_update_post_data&id=all&pos=$pos";
       }
     }
-    echo "Updating directory locations\n";
-    $hubs = $this->directory_locations(true);
-    echo "Updating directory hubs\n";
-    $locations = $this->directory_locations(false);
-    update_option('directory_hubs', $hubs);
-    update_option('directory_locations', $locations);
-    echo "Done\n";
+    if (!empty($next_page)) {
+      echo "<script>window.location = '$next_page';</script>";
+    } else {
+      echo "Updating directory locations\n";
+      $hubs = $this->directory_locations(true);
+      echo "Updating directory hubs\n";
+      $locations = $this->directory_locations(false);
+      update_option('directory_hubs', $hubs);
+      update_option('directory_locations', $locations);
+      echo "Done\n";
+    }
+    exit;
+  }
+  
+  function geocode() {
+    global $wpdb;
+    set_time_limit(0);
+    $listings = $wpdb->get_results("
+      SELECT id, address, zip
+      FROM aib_location
+      WHERE address IS NOT NULL
+        AND address <> ''
+        AND zip IS NOT NULL
+        AND zip <> ''
+    ");
+    echo '<pre>';
+    foreach ($listings as $listing) {
+      echo "Geocoding $listing->address $listing->zip ($listing->id)\n";
+      $address = rawurlencode($listing->address);
+      $zip = rawurlencode($listing->zip);
+      $api_key = 'AIzaSyCO6b9TF6Ts7VFIKwm22eOayIO90SsMtjM';
+      $url = "https://maps.googleapis.com/maps/api/geocode/json" .
+             "?address=$address,%20Brooklyn,%20NY%20$zip" .
+             "&sensor=false&key=$api_key";
+      $response = wp_remote_get($url);
+      $response = json_decode($response['body']);
+      if (!empty($response->results)) {
+        $result = array_shift($response->results);
+        $lat = $result->geometry->location->lat;
+        $lng = $result->geometry->location->lng;
+        echo "  ($lat, $lng)\n";
+        $wpdb->query($wpdb->prepare("
+          UPDATE aib_location
+          SET lat = %s, lng = %s
+          WHERE id = %d
+        ", $lat, $lng, $listing->id));
+      } else {
+        echo "  <b>Unable to geocode</b>\n";
+      }
+    }
+    exit;
+  }
+  
+  function lookup() {
+    echo <<<END
+        <form action="admin-ajax.php">
+          <input type="hidden" name="action" value="bos_lookup">
+          Email:
+          <input type="email" name="email">
+          <input type="submit" value="Lookup">
+        </form>
+END;
+    if (!empty($_GET['email'])) {
+      global $wpdb;
+      $post_id = $wpdb->get_var($wpdb->prepare("
+        SELECT meta_value
+        FROM $wpdb->usermeta,
+             $wpdb->users
+        WHERE meta_key = 'aib_post_bos2014'
+          AND user_email = %s
+          AND user_id = ID
+      ", $_GET['email']));
+      if (!empty($post_id)) {
+        echo $post_id;
+        $post = get_post($post_id);
+        if ($post->post_status != 'publish') {
+          echo " [unpublished]";
+        }
+        if (empty($post->post_name)) {
+          echo " [empty post_name]";
+        }
+        $listing = $wpdb->get_row($wpdb->prepare("
+          SELECT *
+          FROM aib_listing
+          WHERE post_id = %s
+        ", $post_id));
+        if (empty($listing->location_id)) {
+          echo " [empty location_id]";
+        }
+        if (!empty($listing->street_address)) {
+          echo " [$listing->street_address]";
+        }
+        $url = get_permalink($post_id);
+        echo " <a href=\"post.php?post=$post_id&action=edit\">edit</a>";
+        echo " <a href=\"$url\">view</a>";
+        echo " <a href=\"?action=bos_update_post_data&id=$post_id\">update</a>";
+      }
+    }
     exit;
   }
 
@@ -721,12 +845,16 @@ function aib_get_show_links($post) {
       $result .= "&raquo; <a href=\"$url\" target=\"_new\">$show_url</a><br />\n";
     }
   }
-  $email = $wpdb->get_var("
-    SELECT user_email
-    FROM $wpdb->users
-    WHERE ID = $post->post_author
-  ");
-  $result .= "&raquo; <a href=\"mailto:$email\">Contact</a><br />";
+  if (!empty($post->contact_email)) {
+    $result .= "&raquo; <a href=\"mailto:$post->contact_email\">Contact</a><br />";
+  } else {
+    $email = $wpdb->get_var("
+      SELECT user_email
+      FROM $wpdb->users
+      WHERE ID = $post->post_author
+    ");
+    $result .= "&raquo; <a href=\"mailto:$email\">Contact</a><br />";
+  }
   return $result;
 }
 

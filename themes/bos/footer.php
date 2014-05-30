@@ -49,7 +49,7 @@ global $bos;
     var theme_url = '<?php echo get_template_directory_uri(); ?>';
     var header_count = <?php echo $bos->header_count(); ?>;
     </script>
-    <script src="<?php echo get_template_directory_uri(); ?>/bos.js?2014-04-05-1"></script>
+    <script src="<?php echo get_template_directory_uri(); ?>/bos.js?9"></script>
     <?php wp_footer(); ?>
   </body>
 </html>

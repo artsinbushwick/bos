@@ -34,19 +34,27 @@ echo "<script>var directory_locations = $locations;</script>";
       <button type="submit" id="submit"></button>
       <div id="search-meta">
         <span id="result-summary"></span>
-        &middot; <a href="#" id="filter-toggle">filter by medium &amp; attribute</a>
       </div>
       <div id="filter-options">
         <input type="hidden" id="media" name="media" value="<?php if (!empty($_GET['media'])) echo esc_attr($_GET['media']); ?>">
         <input type="hidden" id="attrs" name="attrs" value="<?php if (!empty($_GET['attrs'])) echo esc_attr($_GET['attrs']); ?>">
         <?php
         
+        $css_selectors = array();
+        
         $media = get_terms('media');
         foreach ($media as $m) {
-          if ($m->parent == 0) {
-            echo "<h4>$m->name</h4>";
+          if ($m->parent == 0 && $m->name != 'Other') {
+            if (empty($first_group)) {
+              $first_group = true;
+            } else {
+              echo '</div>';
+            }
+            echo "<div class=\"filter-group\"><h4>$m->name</h4>";
           } else {
-            echo "<label><input type=\"checkbox\" class=\"filter-option\" data-value=\"media-$m->slug\"> $m->name</label>\n";
+            $class = "media-$m->slug";
+            echo "<label><input type=\"checkbox\" class=\"filter-option\" data-value=\"$class\"> <span class=\"label\">$m->name</span></label>\n";
+            $css_selectors[] = "#directory.$class #directory-map .$class, #directory.$class #directory-listings .$class";
           }
         }
         
@@ -54,16 +62,40 @@ echo "<script>var directory_locations = $locations;</script>";
         <?php
         
         $attributes = get_terms('attributes');
-        echo '<h4>By Attribute</h4>';
+        echo '</div><div class="filter-group"><h4>By Attribute</h4>';
         foreach ($attributes as $a) {
-          echo "<label><input type=\"checkbox\" class=\"filter-option\" data-value=\"attributes-$a->slug\"> $a->name</label>\n";
+          $class = "attrs-$a->slug";
+          echo "<label><input type=\"checkbox\" class=\"filter-option\" data-value=\"$class\"> <span class=\"label\">$a->name</span></label>\n";
+          $css_selectors[] = "#directory.$class #directory-map .$class, #directory.$class #directory-listings .$class";
         }
+        
+        // filter group
+        echo '</div>';
         
         ?>
       </div>
+      <span id="filter-status">Showing everything available</span>
+      &middot; <a href="#" id="filter-toggle">filter</a>
     </form>
     <div id="directory-listings" class="loading">
     </div>
+    <style>
+    
+    <?php echo implode(', ', $css_selectors); ?> {
+      display: block;
+    }
+    
+    #directory.filter-results #directory-listings.search-results .listing,
+    #directory.filter-results #directory-map.search-results .leaflet-marker-icon {
+      display: none;
+    }
+    
+    #directory.filter-results #directory-listings.search-results .search-match,
+    #directory.filter-results #directory-map.search-results .search-match {
+      display: block;
+    }
+    
+    </style>
   </div>
 </div>
 <?php

@@ -542,6 +542,7 @@ footer .row3 {
   position: relative;
   margin-left: -5px;
   padding: 15px 0;
+  font-size: 14px;
 }
 
 #search #query {
@@ -583,24 +584,38 @@ footer .row3 {
   display: block;
 }
 
+#directory.filter-results #directory-listings .listing,
+#directory.filter-results #directory-map .leaflet-marker-icon {
+  display: none;
+}
+
 #search-meta {
   font-weight: bold;
   margin-top: 5px;
-  font-size: 14px;
 }
 
 #filter-options {
   display: none;
-  font-size: 14px;
+  margin-bottom: 10px;
 }
 
 #filter-options h4 {
   font-weight: bold;
   margin-top: 5px;
+  color: #EA288F;
+  cursor: pointer;
 }
 
 #filter-options label {
+  display: none;
+}
+
+#filter-options .visible label {
   display: block;
+}
+
+#filter-options .filter-bottom {
+  margin-top: 5px;
 }
 
 #filter-options.visible {

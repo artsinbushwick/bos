@@ -2,7 +2,8 @@
 
 var map_locations = {};
 var masonry;
-    
+window.map_locations = map_locations;
+
 function set_header() {
   var header_num = Math.floor(Math.random() * header_count) + 1;
   var url = theme_url + '/headers/header' + header_num + '.jpg';
@@ -177,10 +178,10 @@ function setup_directory_map() {
     if ($(window).width() < 630) {
       window.scrollTo(1, 126);
     }
-    masonry = new Masonry($('#directory-listings')[0], {
+    /*masonry = new Masonry($('#directory-listings')[0], {
       columnWidth: 290,
       itemSelector: '.listing'
-    });
+    });*/
   }, 0);
   $('#directory-listings').on('click', function(e) {
     var listing, location;
@@ -228,6 +229,9 @@ function setup_directory_map() {
       if (use_history_pushstate()) {
         var base_url = location.protocol + '//' + location.host + location.pathname;
         history.pushState({}, '', base_url + '?q=' + query);
+        $('#query').val(query);
+        directory_search(query);
+        directory_filter('', '');
         e.preventDefault();
       }
       /*var id = $(e.target).attr('data-id');
@@ -244,6 +248,11 @@ function setup_directory_map() {
   $('#filter-toggle').click(function(e) {
     e.preventDefault();
     $('#filter-options').toggleClass('visible');
+    if ($('#filter-options').hasClass('visible')) {
+      $('#filter-toggle').html('hide filter');
+    } else {
+      $('#filter-toggle').html('filter');
+    }
   });
   $('.filter-option').change(function(e) {
     var media = [];
@@ -252,18 +261,23 @@ function setup_directory_map() {
       var value = $(option).attr('data-value');
       if (value.substr(0, 5) == 'media' && option.checked) {
         media.push(value.substr(6));
-      } else if (value.substr(0, 10) == 'attributes' && option.checked) {
-        attrs.push(value.substr(11));
+      } else if (value.substr(0, 5) == 'attrs' && option.checked) {
+        attrs.push(value.substr(6));
       }
     });
     media = media.join(',');
     attrs = attrs.join(',');
     $('#media').val(media);
     $('#attrs').val(attrs);
-    $('#directory')[0].className = '';
+    /*$('#directory')[0].className = '';
     if (media != '' || attrs != '') {
       directory_filter(media, attrs);
-    }
+    }*/
+    $('#search').submit();
+  });
+  $('#filter-options h4').click(function(e) {
+    e.preventDefault();
+    $(e.target).parents('.filter-group').toggleClass('visible');
   });
 }
 
@@ -283,9 +297,7 @@ function setup_search() {
     }
     history.pushState({}, '', base_url + '?q=' + encodeURIComponent($('#query').val()).replace('%3A', ':') + filter);
     directory_search($('#query').val());
-    if (filter != '') {
-      directory_filter($('#media').val(), $('#attrs').val());
-    }
+    directory_filter($('#media').val(), $('#attrs').val());
     return false;
   });
   $(window).on("popstate", function() {
@@ -295,26 +307,32 @@ function setup_search() {
       $('#query').val(query);
       directory_search(query);
     }
-    var media = location.href.match(/media=([^&#]+)/);
-    var attrs = location.href.match(/attrs=([^&#]+)/);
-    if (media || attrs) {
-      if (media) {
-        media = decodeURIComponent(media[1]);
-        directory_set_filter('media', media);
-      }
-      if (attrs) {
-        attrs = decodeURIComponent(attrs[1]);
-        directory_set_filter('attrs', attrs);
-      }
-      directory_filter(media, attrs);
+    var media = location.href.match(/media=([^&#]*)/);
+    if (media) {
+      media = decodeURIComponent(media[1]);
+    } else {
+      media = '';
     }
+    var attrs = location.href.match(/attrs=([^&#]*)/);
+    if (attrs) {
+      attrs = decodeURIComponent(attrs[1]);
+    } else {
+      attrs = '';
+    }
+    directory_filter(media, attrs);
   });
 }
 
 function directory_default_result_summary() {
-  var count = $('#directory-listings .listing').length;
+  var count = 0;
+  var total = $('#directory-listings .listing').length;
+  $('#directory-listings .listing').each(function(i, listing) {
+    if ($(listing).css('display') == 'block') {
+      count++;
+    }
+  });
   var plural = (count == 1) ? ' found' : 's in random order';
-  $('#result-summary').html(count + ' show' + plural);
+  $('#result-summary').html('<span id="directory-count" data-total="' + total + '">' + count + '</span> show' + plural);
 }
 
 function directory_search(query) {
@@ -344,14 +362,26 @@ function directory_search(query) {
     var count = response.ids.length;
     var plural = (count == 1) ? '' : 's';
     var clear_url = location.pathname;
-    $('#result-summary').html(count + ' show' + plural + ' found for “' + response.query + '” <a href="' + clear_url + '" id="search-clear">clear</a>');
+    $('#result-summary').html('<span id="directory-count" data-total="' + count + '">' + count + '</span> show' + plural + ' found for “' + response.query + '” &middot; <a href="' + clear_url + '" id="search-clear">clear</a>');
     if (use_history_pushstate()) {
       $('#search-clear').click(function(e) {
         e.preventDefault();
         var base_url = location.protocol + '//' + location.host + location.pathname;
-        history.pushState({}, '', base_url);
+        var filter_url = [];
+        if ($('#media').val() != '') {
+          filter_url.push('media=' + $('#media').val());
+        }
+        if ($('#attrs').val() != '') {
+          filter_url.push('attrs=' + $('#media').val());
+        }
+        if (filter_url.length > 0) {
+          filter_url = '?' + filter_url.join('&');
+        }
+        history.pushState({}, '', base_url + filter_url);
         $('#directory-listings, #directory-map').removeClass('search-results');
+        $('#directory-listings, #directory-map').removeClass('filter-results');
         $('#query').val('');
+        directory_filter($('#media').val(), $('#attrs').val());
         directory_default_result_summary();
       });
     }
@@ -360,6 +390,14 @@ function directory_search(query) {
 
 function directory_filter(media, attrs) {
   var terms = [];
+  var labels = [];
+  labels = labels.concat(directory_set_filter('media', media));
+  labels = labels.concat(directory_set_filter('attrs', attrs));
+  if (labels.length == 0) {
+    $('#filter-status').html('Showing everything available');
+  } else {
+    $('#filter-status').html('Showing: ' + labels.join(', '));
+  }
   if (typeof media == 'string' && media != '') {
     media = media.split(',');
     for (var i in media) {
@@ -369,17 +407,45 @@ function directory_filter(media, attrs) {
   if (typeof attrs == 'string' && attrs != '') {
     attrs = attrs.split(',');
     for (var i in attrs) {
-      terms.push('attributes-' + attrs[i]);
+      terms.push('attrs-' + attrs[i]);
     }
   }
+  $('#directory')[0].className = '';
   for (var i in terms) {
     $('#directory').addClass(terms[i]);
   }
-  $('#directory').addClass('filter-results');
+  if (terms.length > 0) {
+    $('#directory').addClass('filter-results');
+    var filter_count = 0;
+    $('#directory-listings .listing').each(function(i, listing) {
+      if ($(listing).css('display') == 'block') {
+        filter_count++;
+      }
+    });
+    $('#directory-count').html(filter_count);
+  } else {
+    // Reset count
+    $('#directory-count').html($('#directory-count').attr('data-total'));
+  }
 }
 
-function directory_set_filter(id, value) {
-  
+function directory_set_filter(id, active) {
+  var labels = [];
+  active = active.split(',');
+  $('.filter-option').each(function(i, input) {
+    var value = $(input).attr('data-value');
+    var type = value.substr(0, id.length);
+    var slug = value.substr(id.length + 1);
+    if (type == id) {
+      if (active.indexOf(slug) != -1) {
+        $(input).prop('checked', true);
+        labels.push($(input).closest('label').find('.label').html());
+      } else {
+        $(input).prop('checked', false);
+      }
+    }
+  });
+  return labels;
 }
 
 function directory_map_setup_markers(map) {
@@ -395,6 +461,7 @@ function directory_map_setup_markers(map) {
   if ($('#query').val() != '') {
     directory_search($('#query').val());
   }
+  directory_filter($('#media').val(), $('#attrs').val());
   directory_default_result_summary();
 }
 
@@ -408,24 +475,18 @@ function directory_map_show_markers(map, locations, marker_class) {
 function directory_map_marker(map, location, marker_class) {
   var media = [];
   var attributes = [];
-  for (var i in location.listings) {
-    var listing = location.listings[i];
-    if (typeof listing.media == 'object') {
-      for (var j in listing.media) {
-        media.push(' media-' + listing.media[j]);
-      }
-    }
-    if (typeof listing.attributes == 'object') {
-      for (var j in listing.attributes) {
-        attributes.push(' attributes-' + listing.attributes[j]);
-      }
-    }
-  }
   var zoffset = (marker_class == 'hub') ? 300 : 0;
   var latlng = [location.lat, location.lng];
   var classname = 'directory-map-' + marker_class +
-                  ' location' + location.id +
-                  media.join('') + attributes.join('');
+                  ' location' + location.id;
+  for (var i in location.listings) {
+    var listing = location.listings[i];
+    if (typeof listing.filter_terms == 'object') {
+      for (var i in listing.filter_terms) {
+        classname += ' ' + listing.filter_terms[i];
+      }
+    }
+  }
   location.map_marker = L.marker(latlng, {
     icon: L.divIcon({
       className: classname,
@@ -455,19 +516,13 @@ function directory_listings(location, marker_class) {
     } else {
       continue;
     }
-    var attributes = '';
-    if (typeof listing.attributes === 'object') {
-      for (var i in listing.attributes) {
-        attributes += ' attributes-' + listing.attributes[i];
+    var filter_terms = '';
+    if (typeof listing.filter_terms == 'object') {
+      for (var j in listing.filter_terms) {
+        filter_terms += ' ' + listing.filter_terms[j];
       }
     }
-    var media = '';
-    if (typeof listing.media === 'object') {
-      for (var i in listing.media) {
-        media += ' media-' + listing.media[i];
-      }
-    }
-    html += '<div class="listing location' + listing.location_id + attributes + media + '" id="listing' + listing.post_id + '" ontouchstart="">' +
+    html += '<div class="listing location' + listing.location_id + filter_terms + '" id="listing' + listing.post_id + '" ontouchstart="">' +
             '<h4>' + link_open + directory_listing_title(listing) + link_close + '</h4>' +
             '<div class="summary">' + listing.short_description + '</div>' +
             '<div class="details">' + directory_listing_details(listing, marker_class) + '</div>' +
