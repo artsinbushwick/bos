@@ -478,6 +478,7 @@ class BOS_Theme extends Theme {
       echo "Geocoding $listing->address $listing->zip ($listing->id)\n";
       $address = rawurlencode($listing->address);
       $zip = rawurlencode($listing->zip);
+      // this key is obsolete
       $api_key = 'AIzaSyCO6b9TF6Ts7VFIKwm22eOayIO90SsMtjM';
       $url = "https://maps.googleapis.com/maps/api/geocode/json" .
              "?address=$address,%20Brooklyn,%20NY%20$zip" .
